@@ -170,19 +170,24 @@ const UserInputForm: React.FC<UserInputFormProps> = ({ onComplete }) => {
         )}
         
         {step === 4 && (
-          <div className="space-y-4 animate-fadeIn">
-            <div className="flex items-center mb-4">
-              <DollarSign className="w-6 h-6 text-green-500 mr-2" />
-              <h2 className="text-xl font-bold text-gray-800">Yatırım Araçları Seçimi</h2>
-            </div>
-            
-            <p className="mb-4 text-sm text-gray-600">
-              Her yıl için yatırım yapmak istediğiniz araçları seçin. "Tüm yıllara uygula" seçeneğini işaretlerseniz, 
-              o yatırım aracı tüm yıllar için kullanılacaktır.
-            </p>
-            
-            <InvestmentSelector startYear={new Date().getFullYear() - startedYearsAgo} />
-          </div>
+         <div className="space-y-4 animate-fadeIn">
+         <div className="flex items-center mb-4">
+           <DollarSign className="w-6 h-6 text-green-500 mr-2" />
+           <h2 className="text-xl font-bold text-gray-800">Yatırım Araçları Seçimi</h2>
+         </div>
+       
+         <p className="mb-4 text-sm text-gray-600">
+           Her yıl için farklı yatırım araçları seçebilirsiniz. “Tüm yıllara uygula” kutucuğunu işaretlerseniz,
+           seçtiğiniz araç tüm yıllara otomatik olarak atanır.
+           <br />
+           <span className="text-xs text-gray-500 italic">
+             * Bazı yatırım araçlarına ait veriler 2010 öncesinde mevcut olmayabilir. Her yıl için  geçerli verisi olan araçlar listelenmektedir.
+           </span>
+         </p>
+       
+         <InvestmentSelector startYear={new Date().getFullYear() - startedYearsAgo} />
+       </div>
+       
         )}
       </div>
       

@@ -29,6 +29,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ onReset }) => {
   const totalInvestments: { [asset: string]: { quantity: number; value: number } } = {};
   results.yearlyReturns.forEach((yearData) => {
     yearData.investments.forEach((investment) => {
+      console.log("inv: ",investment)
       const { asset, quantity, value } = investment;
       if (!totalInvestments[asset]) {
         totalInvestments[asset] = { quantity: 0, value: 0 };

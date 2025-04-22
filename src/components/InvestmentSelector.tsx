@@ -20,30 +20,34 @@ const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({ startYear }) =>
     { length: currentYear - startYear + 1 },
     (_, i) => startYear + i
   );
-  
-  // Extract unique investment assets from the invPrices data
-  const assets = new Set<string>();
-  Object.values(invPrices).forEach(monthsData => {
-    Object.values(monthsData).forEach(assetsData => {
-      assetsData.forEach(asset => {
-        assets.add(asset.asset);
+
+  // Extract unique investment assets from the invPrices data, filtering out those with invalid or missing values per year
+  const assetsByYear: Record<number, Set<string>> = {};
+  years.forEach(year => {
+    const yearStr = year.toString();
+    assetsByYear[year] = new Set();
+    if (invPrices[yearStr]) {
+      Object.values(invPrices[yearStr]).forEach(assetsData => {
+        assetsData.forEach(asset => {
+          if (typeof asset.value === 'number' && Number.isFinite(asset.value)) {
+            assetsByYear[year].add(asset.asset);
+          }
+        });
       });
-    });
+    }
   });
-  const assetsList = Array.from(assets);
-  
+
   const handleInvestmentChange = (year: number, index: number, asset: string) => {
     const yearStr = year.toString();
     const newSelectedInvestments = { ...selectedInvestments };
-    
+
     if (!newSelectedInvestments[yearStr]) {
       newSelectedInvestments[yearStr] = [];
     }
-    
+
     newSelectedInvestments[yearStr][index] = asset;
     setSelectedInvestments(newSelectedInvestments);
-    
-    // If "apply to all years" is checked for this index, update all years
+
     if (applyToAllYears[index]) {
       years.forEach(y => {
         const yStr = y.toString();
@@ -55,14 +59,13 @@ const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({ startYear }) =>
       setSelectedInvestments(newSelectedInvestments);
     }
   };
-  
+
   const handleApplyToAllYearsChange = (index: number, checked: boolean) => {
     const newApplyToAllYears = { ...applyToAllYears };
     newApplyToAllYears[index] = checked;
     setApplyToAllYears(newApplyToAllYears);
-    
+
     if (checked) {
-      // Find the first selected asset for this index
       let selectedAsset = '';
       for (const year of years) {
         const yearStr = year.toString();
@@ -71,13 +74,11 @@ const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({ startYear }) =>
           break;
         }
       }
-      
-      // If no asset is selected yet, use the first one from the list
-      if (!selectedAsset && assetsList.length > 0) {
-        selectedAsset = assetsList[0];
+
+      if (!selectedAsset) {
+        selectedAsset = Array.from(assetsByYear[years[0]])[0] || '';
       }
-      
-      // Apply this asset to all years
+
       if (selectedAsset) {
         const newSelectedInvestments = { ...selectedInvestments };
         years.forEach(year => {
@@ -91,10 +92,9 @@ const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({ startYear }) =>
       }
     }
   };
-  
+
   return (
     <div className="space-y-6">
-      {/* Investment types selector */}
       <div className="mb-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {Array.from({ length: investmentCount }).map((_, index) => (
@@ -102,7 +102,7 @@ const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({ startYear }) =>
               <h3 className="text-md font-medium text-gray-700 mb-2">
                 Yatırım Aracı {index + 1}
               </h3>
-              
+
               <div className="flex items-center mb-3">
                 <input
                   id={`apply-all-${index}`}
@@ -115,7 +115,7 @@ const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({ startYear }) =>
                   Tüm yıllara uygula
                 </label>
               </div>
-              
+
               {applyToAllYears[index] ? (
                 <div className="mb-2">
                   <select
@@ -127,7 +127,7 @@ const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({ startYear }) =>
                     onChange={(e) => handleInvestmentChange(years[0], index, e.target.value)}
                   >
                     <option value="">Yatırım aracı seçin</option>
-                    {assetsList.map(asset => (
+                    {Array.from(assetsByYear[years[0]]).map(asset => (
                       <option key={asset} value={asset}>{asset}</option>
                     ))}
                   </select>
@@ -146,7 +146,7 @@ const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({ startYear }) =>
                         onChange={(e) => handleInvestmentChange(year, index, e.target.value)}
                       >
                         <option value="">Seçin</option>
-                        {assetsList.map(asset => (
+                        {Array.from(assetsByYear[year]).map(asset => (
                           <option key={asset} value={asset}>{asset}</option>
                         ))}
                       </select>

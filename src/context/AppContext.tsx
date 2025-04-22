@@ -175,17 +175,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           );
 
 
-          console.log(`Sigara:${selectedBrand}, Yıl: ${yearString}, Ay: ${monthString}`);
-console.log(sigaraPrices[yearString]?.[monthString]);
-
-
-          
           // Calculate monthly cigarette expenditure
           const daysInMonth = new Date(year, month, 0).getDate();
-           console.log("per cigarette Price: ",cigarettePrice)
+
           const monthlySpending = safeCalculate(() => cigarettePrice * packetsPerDay * daysInMonth);
           yearlyData.cigaretteSpent += monthlySpending;
-          console.log("yearlyData.cigaretteSpent: ",yearlyData.cigaretteSpent)
+
           
           // Split spending among investments
           const amountPerInvestment = safeCalculate(() => monthlySpending / investmentCount);
@@ -201,8 +196,7 @@ console.log(sigaraPrices[yearString]?.[monthString]);
               asset,
               'value'
             );
-            console.log("got asset pridce:",assetPrice)
-            console.log("got asset price:", assetPrice, typeof assetPrice);
+            // console.log("got asset price:", assetPrice, typeof assetPrice);
             if (assetPrice > 0) {
               // Calculate quantity purchased
               const quantity = safeCalculate(() => amountPerInvestment / assetPrice);
@@ -244,11 +238,9 @@ investment.value = safeCalculate(() => investment.quantity * latestPrice);
                 'value'
               );*/
               
-            console.log("update asset latestPrice price:",latestPrice)
-              
               // Update investment value
               investment.value = safeCalculate(() => investment.quantity * latestPrice);
-            console.log("update inv latest value:",latestPrice)
+            // console.log("update inv latest value:",latestPrice)
               
             }
           });
