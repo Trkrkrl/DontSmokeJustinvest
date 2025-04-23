@@ -221,7 +221,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           }
 
           // Get cigarette price for this month
-          console.log("224 cigarettePricesdata",sigaraPricesData)
+          //console.log("224 cigarettePricesdata",sigaraPricesData)
           const cigarettePrice = getPriceFromData(
             sigaraPricesData,
             yearString,
