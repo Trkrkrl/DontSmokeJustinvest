@@ -150,15 +150,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       }
 
       setInvPricesData(allResults);
+      setIsLoadingData(false); // <-- Yatırım araçları fiyat çekimi Tamamlandı
+
 
       // 🔄 Sigara fiyat verisini çek
       // 🔄 Sigara fiyatlarını sadece ihtiyaç olan yıllar için çek
       setIsLoadingData(true);
       const cigarettePrices = await fetchSigaraPrices(years);
-      //console.log("sigara fiyatları",cigarettePrices)
+      console.log("sigara fiyatları",cigarettePrices)
       setSigaraPricesData(cigarettePrices);
 
-      setIsLoadingData(false); // <-- Tamamlandı
+      setIsLoadingData(false); // <--Sigara Fiyatları çekimi Tamamlandı
     };
 
     loadData();
