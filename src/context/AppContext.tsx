@@ -70,6 +70,7 @@ const getPriceFromData = (
     const item = data[year]?.[month]?.find(item =>
       item[searchKey]?.toLowerCase().trim() === searchValue.toLowerCase().trim()
     );
+    console.log("getPriceFromData")
 
     if (item) {
       const raw = item[priceKey];
@@ -92,6 +93,7 @@ const getLatestAvailablePriceDate = (
   asset: string
 ): { year: string; month: string } | null => {
   const sortedYears = Object.keys(data).sort((a, b) => Number(a) - Number(b)).reverse();
+  console.log("get latest available")
 
   for (const year of sortedYears) {
     const months = Object.keys(data[year]).sort((a, b) => Number(a) - Number(b)).reverse();
@@ -126,6 +128,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   useEffect(() => {
     const loadData = async () => {
+    console.log("use effect")
+
       setIsLoadingData(true); // <-- Başlangıçta loading
 
       const currentYear = new Date().getFullYear();
@@ -148,7 +152,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           allResults[year] = partialResult[year];
         }
       }
-
+      console.log("all INV pricess pulled")
+ 
       setInvPricesData(allResults);
       setIsLoadingData(false); // <-- Yatırım araçları fiyat çekimi Tamamlandı
 
