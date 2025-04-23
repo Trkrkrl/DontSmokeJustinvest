@@ -24,15 +24,17 @@ const UserInputForm: React.FC<UserInputFormProps> = ({ onComplete }) => {
   const [step, setStep] = useState(1);
   
   // Extract unique brands from the sigaraPrices data
-  const brands = new Set<string>();
-  Object.values(sigaraPrices).forEach(monthsData => {
-    Object.values(monthsData).forEach(brandsData => {
-      brandsData.forEach(brand => {
-        brands.add(brand.brand);
-      });
-    });
-  });
-  
+  // const brands = new Set<string>();
+  // Object.values(sigaraPrices).forEach(monthsData => {
+  //   Object.values(monthsData).forEach(brandsData => {
+  //     brandsData.forEach(brand => {
+  //       brands.add(brand.brand);
+  //     });
+  //   });
+  // });
+  //simdilik sigaralar sabit 2004 e kadar hep bu markaları fiyatları emvcut
+  const brands :string[]=["L&M","Parliament", "Marlboro Uzun", "Marlboro Kısa", "Lark Kısa", "Lark Uzun", "Camel","Winston"];
+
   const handlePrevStep = () => {
     setStep(step => Math.max(1, step - 1));
   };

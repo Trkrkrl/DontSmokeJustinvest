@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import { sigaraPrices } from '../data/sigaraPrices';
 import { fetchInvPrices, invPrices } from '../data/invPrices';
 import { getAvailableAssetsByYear } from '../data/availableAssets';
+import { fetchSigaraPrices } from '../data/sigaraPrices';
 
 
 export interface AppContextType {
@@ -19,7 +20,7 @@ export interface AppContextType {
   applyToAllYears: Record<number, boolean>;
   setApplyToAllYears: (value: Record<number, boolean>) => void;
   isLoadingData: boolean;
-  
+
   // Calculation results
   results: CalculationResults | null;
   calculateResults: () => void;
@@ -117,55 +118,61 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [selectedInvestments, setSelectedInvestments] = useState<Record<string, string[]>>({});
   const [applyToAllYears, setApplyToAllYears] = useState<Record<number, boolean>>({});
   const [isLoadingData, setIsLoadingData] = useState<boolean>(true);
-  
+
   // Results
   const [results, setResults] = useState<CalculationResults | null>(null);
   const [invPricesData, setInvPricesData] = useState<Record<string, Record<string, Array<{ asset: string; value: number }>>>>({});
+  const [sigaraPricesData, setSigaraPricesData] = useState<Record<string, Record<string, Array<{ brand: string; value: number }>>>>({});
 
-useEffect(() => {
-  const loadData = async () => {
-    setIsLoadingData(true); // <-- Başlangıçta loading
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoadingData(true); // <-- Başlangıçta loading
 
-    const currentYear = new Date().getFullYear();
-    const startYear = currentYear - startedYearsAgo;
-    const years = Array.from({ length: currentYear - startYear + 1 }, (_, i) => (startYear + i).toString());
+      const currentYear = new Date().getFullYear();
+      const startYear = currentYear - startedYearsAgo;
+      const years = Array.from({ length: currentYear - startYear + 1 }, (_, i) => (startYear + i).toString());
 
-    const available = await getAvailableAssetsByYear();
-    const filteredAssetsByYear: Record<string, string[]> = {};
+      const available = await getAvailableAssetsByYear();
+      const filteredAssetsByYear: Record<string, string[]> = {};
 
-    for (const year of years) {
-      if (available[year]) {
-        filteredAssetsByYear[year] = available[year];
+      for (const year of years) {
+        if (available[year]) {
+          filteredAssetsByYear[year] = available[year];
+        }
       }
-    }
 
-    const allResults: typeof invPricesData = {};
-    for (const year of years) {
-      const partialResult = await fetchInvPrices([year], { [year]: filteredAssetsByYear[year] || [] });
-      if (Object.keys(partialResult).length > 0) {
-        allResults[year] = partialResult[year];
+      const allResults: typeof invPricesData = {};
+      for (const year of years) {
+        const partialResult = await fetchInvPrices([year], { [year]: filteredAssetsByYear[year] || [] });
+        if (Object.keys(partialResult).length > 0) {
+          allResults[year] = partialResult[year];
+        }
       }
-    }
 
-    setInvPricesData(allResults);
-    setIsLoadingData(false); // <-- Tamamlandı
-  };
+      setInvPricesData(allResults);
 
-  loadData();
-}, [startedYearsAgo]);
+      // 🔄 Sigara fiyat verisini çek
+      const allCigarettePrices = await fetchSigaraPrices();
+      setSigaraPricesData(allCigarettePrices);
+      
+      setIsLoadingData(false); // <-- Tamamlandı
+    };
 
-  
+    loadData();
+  }, [startedYearsAgo]);
+
+
   const calculateResults = () => {
     try {
       const currentYear = new Date().getFullYear();
       const startYear = currentYear - startedYearsAgo;
-      
+
       const packetsPerDay = safeCalculate(() => Math.max(0, dailyCigarettes / 20));
       const yearlyReturns: YearlyReturn[] = [];
-      
+
       let totalInvestmentValue = 0;
       let totalSpentOnCigarettes = 0;
-      
+
       // Calculate for each year
       for (let year = startYear; year <= currentYear; year++) {
         const yearString = year.toString();
@@ -175,7 +182,7 @@ useEffect(() => {
           cigaretteSpent: 0,
           investments: []
         };
-        
+
         // Get selected investments for this year
         const yearInvestments = Array(investmentCount).fill('USD');
         for (let i = 0; i < investmentCount; i++) {
@@ -192,20 +199,20 @@ useEffect(() => {
             }
           }
         }
-        
+
         // Calculate monthly expenditures and investments
         for (let month = 1; month <= 12; month++) {
-         const monthString = month.toString(); // direk "1", "2", ..., "12"
+          const monthString = month.toString(); // direk "1", "2", ..., "12"
 
-          
+
           // Skip future months in current year
           if (year === currentYear && month > new Date().getMonth() + 1) {
             continue;
           }
-          
+
           // Get cigarette price for this month
           const cigarettePrice = getPriceFromData(
-            sigaraPrices,
+            sigaraPricesData ,
             yearString,
             monthString,
             'brand',
@@ -220,15 +227,15 @@ useEffect(() => {
           const monthlySpending = safeCalculate(() => cigarettePrice * packetsPerDay * daysInMonth);
           yearlyData.cigaretteSpent += monthlySpending;
 
-          
+
           // Split spending among investments
           const amountPerInvestment = safeCalculate(() => monthlySpending / investmentCount);
-          
+
           // Process each investment
           yearInvestments.forEach((asset) => {
             // Get investment price for this month
             const assetPrice = getPriceFromData(
-              invPricesData ,
+              invPricesData,
               yearString,
               monthString,
               'asset',
@@ -239,63 +246,63 @@ useEffect(() => {
             if (assetPrice > 0) {
               // Calculate quantity purchased
               const quantity = safeCalculate(() => amountPerInvestment / assetPrice);
-              
+
               // Find or create investment entry
               let investment = yearlyData.investments.find((inv) => inv.asset === asset);
               if (!investment) {
                 investment = { asset, quantity: 0, value: 0 };
                 yearlyData.investments.push(investment);
               }
-              
+
               // Add quantity to investment
               investment.quantity += quantity;
-              
+
               // Get latest price for the asset
-              const latestYear = Object.keys(invPricesData ).sort().pop() || '';
-              const latestMonth = Object.keys(invPricesData [latestYear] || {}).sort().pop() || '';
+              const latestYear = Object.keys(invPricesData).sort().pop() || '';
+              const latestMonth = Object.keys(invPricesData[latestYear] || {}).sort().pop() || '';
               const latestDate = getLatestAvailablePriceDate(invPricesData, asset);
 
-let latestPrice = 0;
-if (latestDate) {
-  latestPrice = getPriceFromData(
-    invPricesData ,
-    latestDate.year,
-    latestDate.month,
-    'asset',
-    asset,
-    'value'
-  );
-}
+              let latestPrice = 0;
+              if (latestDate) {
+                latestPrice = getPriceFromData(
+                  invPricesData,
+                  latestDate.year,
+                  latestDate.month,
+                  'asset',
+                  asset,
+                  'value'
+                );
+              }
 
-investment.value = safeCalculate(() => investment.quantity * latestPrice);
-             /* const latestPrice = getPriceFromData(
-                invPrices,
-                latestYear,
-                latestMonth,
-                'asset',
-                asset,
-                'value'
-              );*/
-              
+              investment.value = safeCalculate(() => investment.quantity * latestPrice);
+              /* const latestPrice = getPriceFromData(
+                 invPrices,
+                 latestYear,
+                 latestMonth,
+                 'asset',
+                 asset,
+                 'value'
+               );*/
+
               // Update investment value
               investment.value = safeCalculate(() => investment.quantity * latestPrice);
-            // console.log("update inv latest value:",latestPrice)
-              
+              // console.log("update inv latest value:",latestPrice)
+
             }
           });
         }
-        
+
         // Calculate total investment value for the year
-        yearlyData.investmentValue = safeCalculate(() => 
+        yearlyData.investmentValue = safeCalculate(() =>
           yearlyData.investments.reduce((sum, inv) => sum + (inv.value || 0), 0)
         );
-        
+
         totalInvestmentValue += yearlyData.investmentValue;
         totalSpentOnCigarettes += yearlyData.cigaretteSpent;
-        
+
         yearlyReturns.push(yearlyData);
       }
-      
+
       setResults({
         yearlyReturns,
         totalInvestmentValue,
@@ -316,7 +323,7 @@ investment.value = safeCalculate(() => investment.quantity * latestPrice);
       });
     }
   };
-  
+
   return (
     <AppContext.Provider value={{
       dailyCigarettes,
