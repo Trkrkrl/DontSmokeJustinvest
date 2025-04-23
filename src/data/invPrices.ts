@@ -42,14 +42,14 @@ export const fetchInvPrices = async (
 ): Promise<InvPrices> => {
   try {
     const response = await getInvPricesFunction({
-      token: import.meta.env.SPECIAL_SS_TOKEN,
+     
       years,
       assetsByYear,
     });
 
     // Firebase Functions response.data içerisinde olmalı
     return response.data as InvPrices;
-    
+
   } catch (error) {
     console.error('Veri alınırken hata:', error);
     return {};

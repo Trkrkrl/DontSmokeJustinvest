@@ -40,12 +40,12 @@ export const fetchSigaraPrices = async (
 ): Promise<SigaraPrices> => {
   try {
     const response = await getSigaraPricesFunction({
-      token: import.meta.env.SPECIAL_SS_TOKEN,
+
       years
     });
     const result = response.data as SigaraPrices;
 
-
+    
     return result;
   } catch (error) {
     console.error('Sigara fiyatları alınırken hata:', error);
