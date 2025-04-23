@@ -29,7 +29,7 @@ export const fetchInvPrices = async (
 ): Promise<Record<string, Record<string, Array<{ asset: string; value: number }>>>> => {
   try {
     const response = await getInvPricesFunction({
-      token: "specialTokenforserverless",
+      token: import.meta.env.SPECIAL_SS_TOKEN,
       years,
       assetsByYear,
     });
