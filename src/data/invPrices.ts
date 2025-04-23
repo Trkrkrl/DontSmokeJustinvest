@@ -1,4 +1,17 @@
 // src/data/invPrices.ts
+export interface InvPriceEntry {
+  asset: string;
+  value: number | "Data Not Available";
+}
+
+export type InvPrices = Record<
+  string, // Yıl (örneğin "1986")
+  Record<
+    string, // Ay (örneğin "1")
+    InvPriceEntry[]
+  >
+>;
+
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,

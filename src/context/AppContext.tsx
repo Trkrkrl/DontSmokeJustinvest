@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { sigaraPrices } from '../data/sigaraPrices';
-import { fetchInvPrices, invPrices } from '../data/invPrices';
+import { SigaraPrices } from '../data/sigaraPrices';
+import { fetchInvPrices, InvPrices  } from '../data/invPrices';
 import { getAvailableAssetsByYear } from '../data/availableAssets';
 import { fetchSigaraPrices } from '../data/sigaraPrices';
 
@@ -59,7 +59,7 @@ const safeCalculate = (operation: () => number): number => {
 
 // Helper function to get price from data
 const getPriceFromData = (
-  data: typeof sigaraPrices | typeof invPrices,
+  data: SigaraPrices | InvPrices ,
   year: string,
   month: string,
   searchKey: string,
