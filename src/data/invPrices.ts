@@ -1,0 +1,43 @@
+// src/data/invPrices.ts
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+};
+
+// Initialize Firebase with custom settings
+let app;
+try {
+  app = initializeApp(firebaseConfig);
+} catch (error) {
+  console.error('Firebase initialization error:', error);
+  throw new Error('Failed to initialize Firebase. Please check your configuration.');
+}
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+export const auth = getAuth(app);
+const functions = getFunctions();
+const getInvPricesFunction = httpsCallable(functions, 'getInvPrices');
+
+export const fetchInvPrices = async (
+  years: string[],
+  assetsByYear: Record<string, string[]>
+): Promise<Record<string, Record<string, Array<{ asset: string; value: number }>>>> => {
+  try {
+    const response = await getInvPricesFunction({
+      token: "specialTokenforserverless",
+      years,
+      assetsByYear,
+    });
+
+    // Firebase Functions response.data içerisinde olmalı
+    return response.data as Record<string, Record<string, Array<{ asset: string; value: number }>>>;
+  } catch (error) {
+    console.error('Veri alınırken hata:', error);
+    return {};
+  }
+};

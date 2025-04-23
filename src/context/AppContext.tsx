@@ -1,6 +1,8 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { sigaraPrices } from '../data/sigaraPrices';
-import { invPrices } from '../data/invPrices';
+import { fetchInvPrices, invPrices } from '../data/invPrices';
+import { getAvailableAssetsByYear } from '../data/availableAssets';
+
 
 export interface AppContextType {
   // User inputs
@@ -16,6 +18,7 @@ export interface AppContextType {
   setSelectedInvestments: (value: Record<string, string[]>) => void;
   applyToAllYears: Record<number, boolean>;
   setApplyToAllYears: (value: Record<number, boolean>) => void;
+  isLoadingData: boolean;
   
   // Calculation results
   results: CalculationResults | null;
@@ -27,6 +30,7 @@ export interface CalculationResults {
   totalInvestmentValue: number;
   totalSpentOnCigarettes: number;
   netProfit: number;
+  roiPercent?: number; // 👈 yeni alan
 }
 
 export interface YearlyReturn {
@@ -112,9 +116,44 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [investmentCount, setInvestmentCount] = useState<number>(1);
   const [selectedInvestments, setSelectedInvestments] = useState<Record<string, string[]>>({});
   const [applyToAllYears, setApplyToAllYears] = useState<Record<number, boolean>>({});
+  const [isLoadingData, setIsLoadingData] = useState<boolean>(true);
   
   // Results
   const [results, setResults] = useState<CalculationResults | null>(null);
+  const [invPricesData, setInvPricesData] = useState<Record<string, Record<string, Array<{ asset: string; value: number }>>>>({});
+
+useEffect(() => {
+  const loadData = async () => {
+    setIsLoadingData(true); // <-- Başlangıçta loading
+
+    const currentYear = new Date().getFullYear();
+    const startYear = currentYear - startedYearsAgo;
+    const years = Array.from({ length: currentYear - startYear + 1 }, (_, i) => (startYear + i).toString());
+
+    const available = await getAvailableAssetsByYear();
+    const filteredAssetsByYear: Record<string, string[]> = {};
+
+    for (const year of years) {
+      if (available[year]) {
+        filteredAssetsByYear[year] = available[year];
+      }
+    }
+
+    const allResults: typeof invPricesData = {};
+    for (const year of years) {
+      const partialResult = await fetchInvPrices([year], { [year]: filteredAssetsByYear[year] || [] });
+      if (Object.keys(partialResult).length > 0) {
+        allResults[year] = partialResult[year];
+      }
+    }
+
+    setInvPricesData(allResults);
+    setIsLoadingData(false); // <-- Tamamlandı
+  };
+
+  loadData();
+}, [startedYearsAgo]);
+
   
   const calculateResults = () => {
     try {
@@ -189,7 +228,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           yearInvestments.forEach((asset) => {
             // Get investment price for this month
             const assetPrice = getPriceFromData(
-              invPrices,
+              invPricesData ,
               yearString,
               monthString,
               'asset',
@@ -212,14 +251,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
               investment.quantity += quantity;
               
               // Get latest price for the asset
-              const latestYear = Object.keys(invPrices).sort().pop() || '';
-              const latestMonth = Object.keys(invPrices[latestYear] || {}).sort().pop() || '';
-              const latestDate = getLatestAvailablePriceDate(invPrices, asset);
+              const latestYear = Object.keys(invPricesData ).sort().pop() || '';
+              const latestMonth = Object.keys(invPricesData [latestYear] || {}).sort().pop() || '';
+              const latestDate = getLatestAvailablePriceDate(invPricesData, asset);
 
 let latestPrice = 0;
 if (latestDate) {
   latestPrice = getPriceFromData(
-    invPrices,
+    invPricesData ,
     latestDate.year,
     latestDate.month,
     'asset',
@@ -261,7 +300,11 @@ investment.value = safeCalculate(() => investment.quantity * latestPrice);
         yearlyReturns,
         totalInvestmentValue,
         totalSpentOnCigarettes,
-        netProfit: safeCalculate(() => totalInvestmentValue - totalSpentOnCigarettes)
+        netProfit: safeCalculate(() => totalInvestmentValue - totalSpentOnCigarettes),
+        roiPercent: safeCalculate(() => {
+          if (totalSpentOnCigarettes === 0) return 0;
+          return ((totalInvestmentValue - totalSpentOnCigarettes) / totalSpentOnCigarettes) * 100;
+        })
       });
     } catch (error) {
       console.error('Error calculating results:', error);
@@ -289,7 +332,8 @@ investment.value = safeCalculate(() => investment.quantity * latestPrice);
       applyToAllYears,
       setApplyToAllYears,
       results,
-      calculateResults
+      calculateResults,
+      isLoadingData,
     }}>
       {children}
     </AppContext.Provider>

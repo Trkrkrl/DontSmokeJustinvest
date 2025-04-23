@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { invPrices } from '../data/invPrices';
+import { getAvailableAssetsByYear } from '../data/availableAssets';
+
+
 
 interface InvestmentSelectorProps {
   startYear: number;
@@ -14,28 +16,37 @@ const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({ startYear }) =>
     applyToAllYears,
     setApplyToAllYears
   } = useAppContext();
-  
+
   const currentYear = new Date().getFullYear();
   const years = Array.from(
     { length: currentYear - startYear + 1 },
     (_, i) => startYear + i
   );
 
+  const [availableAssets, setAvailableAssets] = useState<Record<string, string[]>>({});
+  useEffect(() => {
+    console.log("useefecte girdi");
+
+    const loadAssets = async () => {
+      console.log("loadAssetse girdik");
+
+
+      const data = await getAvailableAssetsByYear();
+      console.log("availables: ", data)
+      setAvailableAssets(data);
+    };
+    loadAssets();
+  }, []);
+
   // Extract unique investment assets from the invPrices data, filtering out those with invalid or missing values per year
-  const assetsByYear: Record<number, Set<string>> = {};
-  years.forEach(year => {
-    const yearStr = year.toString();
-    assetsByYear[year] = new Set();
-    if (invPrices[yearStr]) {
-      Object.values(invPrices[yearStr]).forEach(assetsData => {
-        assetsData.forEach(asset => {
-          if (typeof asset.value === 'number' && Number.isFinite(asset.value)) {
-            assetsByYear[year].add(asset.asset);
-          }
-        });
-      });
-    }
-  });
+  const assetsByYear = useMemo(() => {
+    const map: Record<number, Set<string>> = {};
+    years.forEach((year) => {
+      const yearStr = year.toString();
+      map[year] = new Set(availableAssets[yearStr] || []);
+    });
+    return map;
+  }, [availableAssets, years]);
 
   const handleInvestmentChange = (year: number, index: number, asset: string) => {
     const yearStr = year.toString();
@@ -121,8 +132,8 @@ const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({ startYear }) =>
                   <select
                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
                     value={
-                      (years[0] && selectedInvestments[years[0].toString()] && 
-                      selectedInvestments[years[0].toString()][index]) || ''
+                      (years[0] && selectedInvestments[years[0].toString()] &&
+                        selectedInvestments[years[0].toString()][index]) || ''
                     }
                     onChange={(e) => handleInvestmentChange(years[0], index, e.target.value)}
                   >
@@ -140,8 +151,8 @@ const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({ startYear }) =>
                       <select
                         className="flex-1 px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 text-sm"
                         value={
-                          (selectedInvestments[year.toString()] && 
-                          selectedInvestments[year.toString()][index]) || ''
+                          (selectedInvestments[year.toString()] &&
+                            selectedInvestments[year.toString()][index]) || ''
                         }
                         onChange={(e) => handleInvestmentChange(year, index, e.target.value)}
                       >

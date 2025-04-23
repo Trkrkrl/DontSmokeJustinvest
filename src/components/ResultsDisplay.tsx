@@ -8,14 +8,24 @@ interface ResultsDisplayProps {
 }
 
 const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ onReset }) => {
-  const { results, dailyCigarettes, selectedBrand, startedYearsAgo } = useAppContext();
   const [showChart, setShowChart] = useState(false);
+  const { results, isLoadingData, dailyCigarettes, selectedBrand, startedYearsAgo } = useAppContext();
+
+  if (isLoadingData) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[200px] py-8">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mb-4" />
+        <p className="text-gray-600">Veriler yükleniyor, lütfen bekleyin...</p>
+      </div>
+    );
+  }
+
 
   if (!results) {
     return (
       <div className="text-center p-8">
         <p>Henüz sonuç bulunmuyor.</p>
-        <button 
+        <button
           onClick={onReset}
           className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none btn"
         >
@@ -29,7 +39,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ onReset }) => {
   const totalInvestments: { [asset: string]: { quantity: number; value: number } } = {};
   results.yearlyReturns.forEach((yearData) => {
     yearData.investments.forEach((investment) => {
-      console.log("inv: ",investment)
+      console.log("inv: ", investment)
       const { asset, quantity, value } = investment;
       if (!totalInvestments[asset]) {
         totalInvestments[asset] = { quantity: 0, value: 0 };
@@ -38,10 +48,36 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ onReset }) => {
       totalInvestments[asset].value += value;
     });
   });
+  //-
+  // Yeni: Her yatırım aracının maliyeti ve getirisi hesaplanıyor
+  const assetDetails = Object.entries(totalInvestments).map(([asset, data]) => {
+    let totalSpent = 0;
+
+    results.yearlyReturns.forEach(yearData => {
+      const monthlySpent = yearData.cigaretteSpent;
+      const assetShare = yearData.investments.filter(inv => inv.asset === asset).length
+        / yearData.investments.length;
+
+      totalSpent += monthlySpent * assetShare;
+    });
+
+    const roi = totalSpent > 0 ? ((data.value - totalSpent) / totalSpent) * 100 : 0;
+
+    return {
+      asset,
+      quantity: data.quantity,
+      value: data.value,
+      spent: totalSpent,
+      roi,
+      percentOfTotal: data.value / results.totalInvestmentValue * 100
+    };
+  });
+
+  //-
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('tr-TR', { 
-      style: 'currency', 
+    return new Intl.NumberFormat('tr-TR', {
+      style: 'currency',
       currency: 'TRY',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
@@ -131,8 +167,8 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ onReset }) => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {results.yearlyReturns.map((yearData) => {
-                  const returnRate = yearData.cigaretteSpent > 0 
-                    ? ((yearData.investmentValue / yearData.cigaretteSpent) - 1) * 100 
+                  const returnRate = yearData.cigaretteSpent > 0
+                    ? ((yearData.investmentValue / yearData.cigaretteSpent) - 1) * 100
                     : 0;
 
                   return (
@@ -141,9 +177,8 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ onReset }) => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatCurrency(yearData.cigaretteSpent)}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatCurrency(yearData.investmentValue)}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          returnRate >= 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}>
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${returnRate >= 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                          }`}>
                           {returnRate >= 0 ? '+' : ''}{returnRate.toFixed(2)}%
                         </span>
                       </td>
@@ -156,28 +191,42 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ onReset }) => {
         </div>
       )}
 
-      {/* Asset Details */}
-      <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
-        <h3 className="bg-gray-50 px-6 py-3 text-lg font-medium text-gray-700">Yatırım Araçları Detayı</h3>
-        <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Object.entries(totalInvestments).map(([asset, data]) => (
-              <div key={asset} className="bg-gray-50 p-4 rounded-md">
-                <h4 className="text-md font-medium text-gray-700 mb-2">{asset}</h4>
-                <p className="text-sm text-gray-600">
-                  Toplam Miktar: <span className="font-semibold">{data.quantity.toFixed(4)}</span>
-                </p>
-                <p className="text-sm text-gray-600">
-                  Değeri: <span className="font-semibold">{formatCurrency(data.value)}</span>
-                </p>
-                <p className="text-xs text-gray-500 mt-2">
-                  Toplam yatırımın {((data.value / results.totalInvestmentValue) * 100).toFixed(2)}%'si
-                </p>
-              </div>
-            ))}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {assetDetails.map((detail) => (
+          <div key={detail.asset} className="bg-gray-50 p-4 rounded-md shadow-sm">
+            <h4 className="text-md font-medium text-gray-700 mb-2">{detail.asset}</h4>
+
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold">Toplam Miktar:</span>{' '}
+              {detail.quantity.toFixed(4)}
+            </p>
+
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold">Bugünkü Değer:</span>{' '}
+              {formatCurrency(detail.value)}
+            </p>
+
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold">Toplam Maliyet:</span>{' '}
+              {formatCurrency(detail.spent)}
+            </p>
+
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold">Getiri:</span>{' '}
+              <span className={`font-semibold ${detail.roi >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {detail.roi >= 0 ? '+' : ''}{detail.roi.toFixed(2)}%
+              </span>
+            </p>
+
+            <p className="text-xs text-gray-500 mt-2">
+              Toplam yatırımın %{detail.percentOfTotal.toFixed(2)}’i
+            </p>
           </div>
-        </div>
+        ))}
       </div>
+
+
 
       {/* Action buttons */}
       <div className="flex justify-between">
