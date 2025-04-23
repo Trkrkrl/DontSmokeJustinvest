@@ -64,13 +64,13 @@ const getPriceFromData = (
   month: string,
   searchKey: string,
   searchValue: string,
-  priceKey: 'price' | 'value' = 'value' // <-- default artık 'value'
+  priceKey:  'value' 
 ): number => {
   try {
     const item = data[year]?.[month]?.find(item =>
       item[searchKey]?.toLowerCase().trim() === searchValue.toLowerCase().trim()
     );
-    console.log("getPriceFromData")
+ 
 
     if (item) {
       const raw = item[priceKey];
@@ -89,7 +89,7 @@ const getPriceFromData = (
 };
 //eğer son ay verisi boşsa son müsait ay verisini getir
 const getLatestAvailablePriceDate = (
-  data: typeof invPrices,
+  data: InvPrices,
   asset: string
 ): { year: string; month: string } | null => {
   const sortedYears = Object.keys(data).sort((a, b) => Number(a) - Number(b)).reverse();
@@ -221,6 +221,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           }
 
           // Get cigarette price for this month
+          console.log("224 cigarettePricesdata",sigaraPricesData)
           const cigarettePrice = getPriceFromData(
             sigaraPricesData,
             yearString,
