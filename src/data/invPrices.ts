@@ -39,7 +39,7 @@ const getInvPricesFunction = httpsCallable(functions, 'getInvPrices');
 export const fetchInvPrices = async (
   years: string[],
   assetsByYear: Record<string, string[]>
-): Promise<Record<string, Record<string, Array<{ asset: string; value: number }>>>> => {
+): Promise<InvPrices> => {
   try {
     const response = await getInvPricesFunction({
       token: import.meta.env.SPECIAL_SS_TOKEN,
@@ -48,7 +48,8 @@ export const fetchInvPrices = async (
     });
 
     // Firebase Functions response.data içerisinde olmalı
-    return response.data as Record<string, Record<string, Array<{ asset: string; value: number }>>>;
+    return response.data as InvPrices;
+    
   } catch (error) {
     console.error('Veri alınırken hata:', error);
     return {};
