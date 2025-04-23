@@ -152,9 +152,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       setInvPricesData(allResults);
 
       // 🔄 Sigara fiyat verisini çek
-      const allCigarettePrices = await fetchSigaraPrices();
-      setSigaraPricesData(allCigarettePrices);
-      
+      // 🔄 Sigara fiyatlarını sadece ihtiyaç olan yıllar için çek
+      const cigarettePrices = await fetchSigaraPrices(years);
+      setSigaraPricesData(cigarettePrices);
+
       setIsLoadingData(false); // <-- Tamamlandı
     };
 
@@ -212,7 +213,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
           // Get cigarette price for this month
           const cigarettePrice = getPriceFromData(
-            sigaraPricesData ,
+            sigaraPricesData,
             yearString,
             monthString,
             'brand',

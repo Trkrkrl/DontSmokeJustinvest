@@ -24,12 +24,19 @@ export const auth = getAuth(app);
 const functions = getFunctions();
 const getSigaraPricesFunction = httpsCallable(functions, 'getSigaraPrices');
 
-export const fetchSigaraPrices = async (): Promise<Record<string, Record<string, Array<{ brand: string; value: number }>>>> => {
+export const fetchSigaraPrices = async (
+  years: string[]
+): Promise<Record<string, Record<string, Array<{ brand: string; value: number }>>>> => {
   try {
-    const response = await getSigaraPricesFunction({ token: import.meta.env.SPECIAL_SS_TOKEN });
+    const response = await getSigaraPricesFunction({
+      token: import.meta.env.SPECIAL_SS_TOKEN,
+      years
+    });
+
     return response.data as Record<string, Record<string, Array<{ brand: string; value: number }>>>;
   } catch (error) {
     console.error('Sigara fiyatları alınırken hata:', error);
     return {};
   }
 };
+
