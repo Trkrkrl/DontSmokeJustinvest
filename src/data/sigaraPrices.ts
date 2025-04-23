@@ -44,7 +44,6 @@ export const fetchSigaraPrices = async (
       years
     });
     const result = response.data as SigaraPrices;
-    console.log("Sigara fiyatları:", result);
 
 
     return result;

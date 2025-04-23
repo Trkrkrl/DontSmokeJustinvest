@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { SigaraPrices } from '../data/sigaraPrices';
-import { fetchInvPrices, InvPrices  } from '../data/invPrices';
+import { SigaraPriceEntry, SigaraPrices } from '../data/sigaraPrices';
+import { fetchInvPrices, InvPriceEntry, InvPrices } from '../data/invPrices';
 import { getAvailableAssetsByYear } from '../data/availableAssets';
 import { fetchSigaraPrices } from '../data/sigaraPrices';
 
@@ -20,10 +20,21 @@ export interface AppContextType {
   applyToAllYears: Record<number, boolean>;
   setApplyToAllYears: (value: Record<number, boolean>) => void;
   isLoadingData: boolean;
+  hasUserSelectedStartYear: boolean;
+  setHasUserSelectedStartYear: (val: boolean) => void;
+  shouldTriggerCalculation: boolean;
+  setTriggerCalculateResult: (val: boolean) => void;
+  hasCalculationTriggered: boolean;
+  setAllDatasFetched: (val: boolean) => void;
+  hasAllDatasFetched: boolean;
+  isCalculating: boolean;
+
+  setShouldTriggerCalculation: (val: boolean) => void;
+
 
   // Calculation results
-  results: CalculationResults | null;
-  calculateResults: () => void;
+  // results: CalculationResults | null;
+  // calculateResults: () => void;
 }
 
 export interface CalculationResults {
@@ -58,32 +69,67 @@ const safeCalculate = (operation: () => number): number => {
 };
 
 // Helper function to get price from data
-const getPriceFromData = (
-  data: SigaraPrices | InvPrices ,
+export const getCigarettePriceFromData = (
+  data: SigaraPrices,
   year: string,
   month: string,
-  searchKey: string,
-  searchValue: string,
-  priceKey:  'value' 
+  brand: string
 ): number => {
   try {
-    const item = data[year]?.[month]?.find(item =>
-      item[searchKey]?.toLowerCase().trim() === searchValue.toLowerCase().trim()
-    );
- 
+    const entries = data[year]?.[month];
+    if (!entries) return 0;
 
-    if (item) {
-      const raw = item[priceKey];
-      if (typeof raw === 'number') return raw;
-      if (typeof raw === 'string') {
-        // Örn: "1.376,25" → 1376.25
-        const parsed = parseFloat(raw.replace(/\./g, '').replace(',', '.'));
-        return isNaN(parsed) ? 0 : parsed;
-      }
+    const item = entries.find(entry =>
+      entry.brand.toLowerCase().trim() === brand.toLowerCase().trim()
+    );
+
+    if (!item) return 0;
+
+    const raw = item.value;
+
+    if (typeof raw === 'number') return raw;
+
+    if (typeof raw === 'string') {
+      const parsed = parseFloat(raw.replace(/\./g, '').replace(',', '.'));
+      return isNaN(parsed) ? 0 : parsed;
     }
 
     return 0;
-  } catch {
+  } catch (error) {
+    console.error('getCigarettePriceFromData error:', error);
+    return 0;
+  }
+};
+export const getInvestmentPriceFromData = (
+  data: InvPrices,
+  year: string,
+  month: string,
+  asset: string
+): number => {
+  try {
+    const entries = data[year]?.[month];
+    if (!entries) return 0;
+
+    const item = entries.find(entry =>
+      entry.asset.toLowerCase().trim() === asset.toLowerCase().trim()
+    );
+
+    if (!item) return 0;
+
+    const raw = item.value;
+
+    if (raw === 'Data Not Available') return 0;
+
+    if (typeof raw === 'number') return raw;
+
+    if (typeof raw === 'string') {
+      const parsed = parseFloat(raw.replace(/\./g, '').replace(',', '.'));
+      return isNaN(parsed) ? 0 : parsed;
+    }
+
+    return 0;
+  } catch (error) {
+    console.error('getInvestmentPriceFromData error:', error);
     return 0;
   }
 };
@@ -93,7 +139,6 @@ const getLatestAvailablePriceDate = (
   asset: string
 ): { year: string; month: string } | null => {
   const sortedYears = Object.keys(data).sort((a, b) => Number(a) - Number(b)).reverse();
-  console.log("get latest available")
 
   for (const year of sortedYears) {
     const months = Object.keys(data[year]).sort((a, b) => Number(a) - Number(b)).reverse();
@@ -121,14 +166,32 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [applyToAllYears, setApplyToAllYears] = useState<Record<number, boolean>>({});
   const [isLoadingData, setIsLoadingData] = useState<boolean>(true);
 
+  const [hasUserSelectedStartYear, setHasUserSelectedStartYear] = useState(false);
+  const [hasCalculationTriggered, setTriggerCalculateResult] = useState(false);
+  const [hasAllDatasFetched, setAllDatasFetched] = useState(false);
+  // AppProvider.tsx – state’lerin yanına ekle
+  const [isCalculating, setIsCalculating] = useState(false);
+
+
+
+
+
   // Results
   const [results, setResults] = useState<CalculationResults | null>(null);
-  const [invPricesData, setInvPricesData] = useState<Record<string, Record<string, Array<{ asset: string; value: number }>>>>({});
-  const [sigaraPricesData, setSigaraPricesData] = useState<Record<string, Record<string, Array<{ brand: string; value: number }>>>>({});
+  const [invPricesData, setInvPricesData] = useState<InvPrices>({});
+  const [sigaraPricesData, setSigaraPricesData] = useState<SigaraPrices>({});
+  const [shouldTriggerCalculation, setShouldTriggerCalculation] = useState(false);
 
   useEffect(() => {
+    if (hasUserSelectedStartYear && hasCalculationTriggered && hasAllDatasFetched) {
+      console.log("🚀 Tüm veriler geldi, hesaplama başlatılıyor");
+      calculateResults();
+    }
+  }, [hasUserSelectedStartYear, hasCalculationTriggered, hasAllDatasFetched]);
+
+  useEffect(() => {
+    if (!hasUserSelectedStartYear) return; // yıl henüz seçilmemişse veri çekme
     const loadData = async () => {
-    console.log("use effect")
 
       setIsLoadingData(true); // <-- Başlangıçta loading
 
@@ -145,194 +208,209 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         }
       }
 
-      const allResults: typeof invPricesData = {};
+      const allResults: InvPrices = {};
       for (const year of years) {
         const partialResult = await fetchInvPrices([year], { [year]: filteredAssetsByYear[year] || [] });
         if (Object.keys(partialResult).length > 0) {
           allResults[year] = partialResult[year];
         }
       }
-      console.log("all INV pricess pulled")
- 
+
       setInvPricesData(allResults);
-      setIsLoadingData(false); // <-- Yatırım araçları fiyat çekimi Tamamlandı
+
 
 
       // 🔄 Sigara fiyat verisini çek
       // 🔄 Sigara fiyatlarını sadece ihtiyaç olan yıllar için çek
-      setIsLoadingData(true);
-      const cigarettePrices = await fetchSigaraPrices(years);
-      console.log("sigara fiyatları",cigarettePrices)
-      setSigaraPricesData(cigarettePrices);
 
-      setIsLoadingData(false); // <--Sigara Fiyatları çekimi Tamamlandı
+      const cigarettePrices = await fetchSigaraPrices(years);
+      setSigaraPricesData(cigarettePrices);
+      setAllDatasFetched(true)
+
+      // if (
+
+      //   hasCalculationTriggered && hasAllDatasFetched
+      // ) {
+      //   calculateResults();
+      // }
+
+      // ⬇️ loadData() en SON satırı
+      setAllDatasFetched(true);          // veriler hazır
+      setIsCalculating(true);            // loading göstergesi açık kalsın
+      calculateResults();                // hesaplama başlasın
+      // setIsLoadingData(false); // <--Sigara Fiyatları çekimi Tamamlandı
+
+
     };
 
     loadData();
-  }, [startedYearsAgo]);
+  }, [startedYearsAgo, hasUserSelectedStartYear, hasCalculationTriggered, hasAllDatasFetched]);
 
 
   const calculateResults = () => {
-    try {
-      const currentYear = new Date().getFullYear();
-      const startYear = currentYear - startedYearsAgo;
+    if (hasAllDatasFetched) {
+      try {
+        const currentYear = new Date().getFullYear();
+        const startYear = currentYear - startedYearsAgo;
 
-      const packetsPerDay = safeCalculate(() => Math.max(0, dailyCigarettes / 20));
-      const yearlyReturns: YearlyReturn[] = [];
+        const packetsPerDay = safeCalculate(() => Math.max(0, dailyCigarettes / 20));
+        const yearlyReturns: YearlyReturn[] = [];
 
-      let totalInvestmentValue = 0;
-      let totalSpentOnCigarettes = 0;
+        let totalInvestmentValue = 0;
+        let totalSpentOnCigarettes = 0;
 
-      // Calculate for each year
-      for (let year = startYear; year <= currentYear; year++) {
-        const yearString = year.toString();
-        const yearlyData: YearlyReturn = {
-          year,
-          investmentValue: 0,
-          cigaretteSpent: 0,
-          investments: []
-        };
+        // Calculate for each year
+        for (let year = startYear; year <= currentYear; year++) {
+          const yearString = year.toString();
+          const yearlyData: YearlyReturn = {
+            year,
+            investmentValue: 0,
+            cigaretteSpent: 0,
+            investments: []
+          };
 
-        // Get selected investments for this year
-        const yearInvestments = Array(investmentCount).fill('USD');
-        for (let i = 0; i < investmentCount; i++) {
-          if (selectedInvestments[yearString]?.[i]) {
-            yearInvestments[i] = selectedInvestments[yearString][i];
-          } else if (applyToAllYears[i]) {
-            // Find the first selected asset for this index
-            for (let y = year; y >= startYear; y--) {
-              const prevYearStr = y.toString();
-              if (selectedInvestments[prevYearStr]?.[i]) {
-                yearInvestments[i] = selectedInvestments[prevYearStr][i];
-                break;
+          // Get selected investments for this year
+          const yearInvestments = Array(investmentCount).fill('USD');
+          for (let i = 0; i < investmentCount; i++) {
+            if (selectedInvestments[yearString]?.[i]) {
+              yearInvestments[i] = selectedInvestments[yearString][i];
+            } else if (applyToAllYears[i]) {
+              // Find the first selected asset for this index
+              for (let y = year; y >= startYear; y--) {
+                const prevYearStr = y.toString();
+                if (selectedInvestments[prevYearStr]?.[i]) {
+                  yearInvestments[i] = selectedInvestments[prevYearStr][i];
+                  break;
+                }
               }
             }
           }
-        }
 
-        // Calculate monthly expenditures and investments
-        for (let month = 1; month <= 12; month++) {
-          const monthString = month.toString(); // direk "1", "2", ..., "12"
-
-
-          // Skip future months in current year
-          if (year === currentYear && month > new Date().getMonth() + 1) {
-            continue;
-          }
-
-          // Get cigarette price for this month
-          //console.log("224 cigarettePricesdata",sigaraPricesData)
-          const cigarettePrice = getPriceFromData(
-            sigaraPricesData,
-            yearString,
-            monthString,
-            'brand',
-            selectedBrand,
-            'value'
-          );
+          // Calculate monthly expenditures and investments
+          for (let month = 1; month <= 12; month++) {
+            const monthString = month.toString(); // direk "1", "2", ..., "12"
 
 
-          // Calculate monthly cigarette expenditure
-          const daysInMonth = new Date(year, month, 0).getDate();
+            // Skip future months in current year
+            if (year === currentYear && month > new Date().getMonth() + 1) {
+              continue;
+            }
 
-          const monthlySpending = safeCalculate(() => cigarettePrice * packetsPerDay * daysInMonth);
-          yearlyData.cigaretteSpent += monthlySpending;
-
-
-          // Split spending among investments
-          const amountPerInvestment = safeCalculate(() => monthlySpending / investmentCount);
-
-          // Process each investment
-          yearInvestments.forEach((asset) => {
-            // Get investment price for this month
-            const assetPrice = getPriceFromData(
-              invPricesData,
+            // Get cigarette price for this month
+            const cigarettePrice = getCigarettePriceFromData(
+              sigaraPricesData,
               yearString,
               monthString,
-              'asset',
-              asset,
-              'value'
+
+              selectedBrand,
+
             );
-            // console.log("got asset price:", assetPrice, typeof assetPrice);
-            if (assetPrice > 0) {
-              // Calculate quantity purchased
-              const quantity = safeCalculate(() => amountPerInvestment / assetPrice);
 
-              // Find or create investment entry
-              let investment = yearlyData.investments.find((inv) => inv.asset === asset);
-              if (!investment) {
-                investment = { asset, quantity: 0, value: 0 };
-                yearlyData.investments.push(investment);
+            // Calculate monthly cigarette expenditure
+            const daysInMonth = new Date(year, month, 0).getDate();
+
+            const monthlySpending = safeCalculate(() => cigarettePrice * packetsPerDay * daysInMonth);
+            yearlyData.cigaretteSpent += monthlySpending;
+
+
+            // Split spending among investments
+            const amountPerInvestment = safeCalculate(() => monthlySpending / investmentCount);
+
+            // Process each investment
+            yearInvestments.forEach((asset) => {
+              // Get investment price for this month
+              const assetPrice = getInvestmentPriceFromData(
+                invPricesData,
+                yearString,
+                monthString,
+
+                asset,
+
+              );
+
+              if (assetPrice > 0) {
+                // Calculate quantity purchased
+                const quantity = safeCalculate(() => amountPerInvestment / assetPrice);
+
+                // Find or create investment entry
+                let investment = yearlyData.investments.find((inv) => inv.asset === asset);
+                if (!investment) {
+                  investment = { asset, quantity: 0, value: 0 };
+                  yearlyData.investments.push(investment);
+                }
+
+                // Add quantity to investment
+                investment.quantity += quantity;
+
+                // Get latest price for the asset
+                const latestYear = Object.keys(invPricesData).sort().pop() || '';
+                const latestMonth = Object.keys(invPricesData[latestYear] || {}).sort().pop() || '';
+                const latestDate = getLatestAvailablePriceDate(invPricesData, asset);
+
+                let latestPrice = 0;
+                if (latestDate) {
+                  latestPrice = getInvestmentPriceFromData(
+                    invPricesData,
+                    latestDate.year,
+                    latestDate.month,
+                    asset,
+                  );
+                }
+
+                investment.value = safeCalculate(() => investment.quantity * latestPrice);
+                /* const latestPrice = getPriceFromData(
+                   invPrices,
+                   latestYear,
+                   latestMonth,
+                   'asset',
+                   asset,
+                   'value'
+                 );*/
+
+                // Update investment value
+                investment.value = safeCalculate(() => investment.quantity * latestPrice);
+
               }
+            });
+          }
 
-              // Add quantity to investment
-              investment.quantity += quantity;
+          // Calculate total investment value for the year
+          yearlyData.investmentValue = safeCalculate(() =>
+            yearlyData.investments.reduce((sum, inv) => sum + (inv.value || 0), 0)
+          );
 
-              // Get latest price for the asset
-              const latestYear = Object.keys(invPricesData).sort().pop() || '';
-              const latestMonth = Object.keys(invPricesData[latestYear] || {}).sort().pop() || '';
-              const latestDate = getLatestAvailablePriceDate(invPricesData, asset);
+          totalInvestmentValue += yearlyData.investmentValue;
+          totalSpentOnCigarettes += yearlyData.cigaretteSpent;
 
-              let latestPrice = 0;
-              if (latestDate) {
-                latestPrice = getPriceFromData(
-                  invPricesData,
-                  latestDate.year,
-                  latestDate.month,
-                  'asset',
-                  asset,
-                  'value'
-                );
-              }
-
-              investment.value = safeCalculate(() => investment.quantity * latestPrice);
-              /* const latestPrice = getPriceFromData(
-                 invPrices,
-                 latestYear,
-                 latestMonth,
-                 'asset',
-                 asset,
-                 'value'
-               );*/
-
-              // Update investment value
-              investment.value = safeCalculate(() => investment.quantity * latestPrice);
-              // console.log("update inv latest value:",latestPrice)
-
-            }
-          });
+          yearlyReturns.push(yearlyData);
         }
 
-        // Calculate total investment value for the year
-        yearlyData.investmentValue = safeCalculate(() =>
-          yearlyData.investments.reduce((sum, inv) => sum + (inv.value || 0), 0)
-        );
+        setResults({
+          yearlyReturns,
+          totalInvestmentValue,
+          totalSpentOnCigarettes,
+          netProfit: safeCalculate(() => totalInvestmentValue - totalSpentOnCigarettes),
+          roiPercent: safeCalculate(() => {
+            if (totalSpentOnCigarettes === 0) return 0;
+            return ((totalInvestmentValue - totalSpentOnCigarettes) / totalSpentOnCigarettes) * 100;
+          })
+        });
+        setIsLoadingData(false); // <--Sigara Fiyatları çekimi Tamamlandı
 
-        totalInvestmentValue += yearlyData.investmentValue;
-        totalSpentOnCigarettes += yearlyData.cigaretteSpent;
+      } catch (error) {
+        console.error('Error calculating results:', error);
+        setResults({
+          yearlyReturns: [],
+          totalInvestmentValue: 0,
+          totalSpentOnCigarettes: 0,
+          netProfit: 0
+        });
+        setIsLoadingData(false); // <--Sigara Fiyatları çekimi Tamamlandı
 
-        yearlyReturns.push(yearlyData);
       }
 
-      setResults({
-        yearlyReturns,
-        totalInvestmentValue,
-        totalSpentOnCigarettes,
-        netProfit: safeCalculate(() => totalInvestmentValue - totalSpentOnCigarettes),
-        roiPercent: safeCalculate(() => {
-          if (totalSpentOnCigarettes === 0) return 0;
-          return ((totalInvestmentValue - totalSpentOnCigarettes) / totalSpentOnCigarettes) * 100;
-        })
-      });
-    } catch (error) {
-      console.error('Error calculating results:', error);
-      setResults({
-        yearlyReturns: [],
-        totalInvestmentValue: 0,
-        totalSpentOnCigarettes: 0,
-        netProfit: 0
-      });
     }
+
   };
 
   return (
@@ -352,6 +430,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       results,
       calculateResults,
       isLoadingData,
+      hasUserSelectedStartYear,
+      setHasUserSelectedStartYear
     }}>
       {children}
     </AppContext.Provider>

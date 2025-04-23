@@ -9,9 +9,9 @@ interface ResultsDisplayProps {
 
 const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ onReset }) => {
   const [showChart, setShowChart] = useState(false);
-  const { results, isLoadingData, dailyCigarettes, selectedBrand, startedYearsAgo } = useAppContext();
+  const { results, isLoadingData, dailyCigarettes, selectedBrand, startedYearsAgo,isCalculating } = useAppContext();
 
-  if (isLoadingData) {
+  if (isLoadingData || isCalculating) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[200px] py-8">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mb-4" />
@@ -39,7 +39,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ onReset }) => {
   const totalInvestments: { [asset: string]: { quantity: number; value: number } } = {};
   results.yearlyReturns.forEach((yearData) => {
     yearData.investments.forEach((investment) => {
-      console.log("inv: ", investment)
+      // console.log("inv: ", investment)
       const { asset, quantity, value } = investment;
       if (!totalInvestments[asset]) {
         totalInvestments[asset] = { quantity: 0, value: 0 };

@@ -18,7 +18,8 @@ const UserInputForm: React.FC<UserInputFormProps> = ({ onComplete }) => {
     setStartedYearsAgo,
     investmentCount, 
     setInvestmentCount,
-    calculateResults
+    calculateResults,
+    setHasUserSelectedStartYear
   } = useAppContext();
 
   const [step, setStep] = useState(1);
@@ -45,7 +46,8 @@ const UserInputForm: React.FC<UserInputFormProps> = ({ onComplete }) => {
 
   
   const handleSubmit = () => {
- console.log("Formdan gönderilen brand:", selectedBrand);
+    console.log("Formdan gönderilen brand:", selectedBrand);
+    setHasUserSelectedStartYear(true);
     calculateResults(selectedBrand); 
    
 
@@ -134,7 +136,12 @@ const UserInputForm: React.FC<UserInputFormProps> = ({ onComplete }) => {
                 max="50"
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none form-input"
                 value={startedYearsAgo}
-                onChange={(e) => setStartedYearsAgo(parseInt(e.target.value) || 0)}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value) || 0;
+                  setStartedYearsAgo(value);
+                  setHasUserSelectedStartYear(true);
+                }}
+                
               />
               <p className="mt-1 text-sm text-gray-500">
                 {new Date().getFullYear() - startedYearsAgo} yılından beri sigara kullanıyorsunuz.
