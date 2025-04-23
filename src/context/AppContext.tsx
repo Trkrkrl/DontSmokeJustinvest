@@ -155,7 +155,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       // 🔄 Sigara fiyatlarını sadece ihtiyaç olan yıllar için çek
       setIsLoadingData(true);
       const cigarettePrices = await fetchSigaraPrices(years);
-      console.log("sigara fiyatları",cigarettePrices)
+      //console.log("sigara fiyatları",cigarettePrices)
       setSigaraPricesData(cigarettePrices);
 
       setIsLoadingData(false); // <-- Tamamlandı
