@@ -25,14 +25,11 @@ const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({ startYear }) =>
 
   const [availableAssets, setAvailableAssets] = useState<Record<string, string[]>>({});
   useEffect(() => {
-    console.log("useefecte girdi");
 
     const loadAssets = async () => {
-      console.log("loadAssetse girdik");
-
 
       const data = await getAvailableAssetsByYear();
-      console.log("availables: ", data)
+     // console.log("availables: ", data)
       setAvailableAssets(data);
     };
     loadAssets();
