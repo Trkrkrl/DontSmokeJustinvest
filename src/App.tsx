@@ -10,7 +10,7 @@ function App() {
   
   return (
     <AppProvider>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="full-height-layout  bg-gradient-to-br from-gray-50 to-gray-100">
         <header className="bg-white shadow-sm">
           <div className="container mx-auto px-4 py-4 flex items-center">
             <Calculator className="h-8 w-8 text-green-600 mr-3" />
@@ -18,7 +18,7 @@ function App() {
           </div>
         </header>
         
-        <main className="container mx-auto px-4 py-8">
+        <main className="container mx-auto px-4 py-8 flex-grow-main">
           {!showResults ? (
             <UserInputForm onComplete={() => setShowResults(true)} />
           ) : (
@@ -31,7 +31,7 @@ function App() {
     <p className="text-sm font-semibold">© 2025 Sigara vs Yatırım Kıyaslayıcı. Tüm hakları saklıdır.</p>
 
     <p className="text-xs mt-2 text-gray-400">
-      Bu araç, sigaraya harcanan paranın uzun vadeli yatırım fırsatlarına nasıl dönüşebileceğini göstermek için tasarlanmıştır.
+      Bu araç, sigaraya harcanan paranın uzun vadeli yatırım fırsatlarına nasıl dönüşebileceğini göstermek için tasarlanmıştır. Yatırım tavsiyesi değildir. 
     </p>
 
     <p className="text-xs mt-4 text-gray-300">
@@ -40,7 +40,7 @@ function App() {
 
     <div className="mt-3 flex justify-center space-x-4">
       <a
-        href="https://github.com/Trkrkrl/DontSmokeJustinvest" // GitHub URL'ni buraya ekle
+        href="https://github.com/sponsors/Trkrkrl" // GitHub URL'ni buraya ekle
         target="_blank"
         rel="noopener noreferrer"
         className="text-sm text-blue-400 hover:text-blue-300 underline"
