@@ -29,7 +29,10 @@ function MainContent() {
       navigate(newPath);
     }
   };
-  
+  const handleHeaderClick = () => {
+    navigate(`/${lang}`);
+  };
+
 
   return (
     <>
@@ -45,7 +48,10 @@ function MainContent() {
       <div className="full-height-layout bg-gradient-to-br from-gray-50 to-gray-100">
         <header className="bg-white shadow-sm">
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-            <div className="flex items-center">
+            <div
+              onClick={handleHeaderClick}
+              className="flex items-center cursor-pointer hover:opacity-80 transition"
+            >
               <Calculator className="h-8 w-8 text-green-600 mr-3" />
               <h1 className="text-2xl font-bold text-gray-800">{t('header.title')}</h1>
             </div>
