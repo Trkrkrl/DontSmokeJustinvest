@@ -222,14 +222,14 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ onReset }) => {
             </p>
 
             <p className="text-sm text-gray-600">
-              <span className="font-semibold">{t("resultsDisplay.profitReturn")}Getiri:</span>{' '}
+              <span className="font-semibold">{t("resultsDisplay.profitReturn")}</span>{' '}
               <span className={`font-semibold ${detail.roi >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {detail.roi >= 0 ? '+' : ''}{detail.roi.toFixed(2)}%
               </span>
             </p>
 
             <p className="text-xs text-gray-500 mt-2">
-              {t('resultsDisplay.step2.since', {
+              {t('resultsDisplay.totalIncPercentage', {
                 totalIncPercentage: detail.percentOfTotal.toFixed(2)
               })}
 
