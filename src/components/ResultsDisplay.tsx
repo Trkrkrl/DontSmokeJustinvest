@@ -3,6 +3,7 @@ import { ArrowLeft, Printer, BarChart3, TrendingUp } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import InvestmentChart from './InvestmentChart';
 import { useTranslation } from 'react-i18next';
+import AdModal from './AdModal';
 
 interface ResultsDisplayProps {
   onReset: () => void;
@@ -12,9 +13,17 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ onReset }) => {
   const [showChart, setShowChart] = useState(false);
   const { results, isLoadingData, dailyCigarettes, selectedBrand, startedYearsAgo, isCalculating } = useAppContext();
   const { t } = useTranslation();
+  const [showAd, setShowAd] = useState(true);
+  const [adFinished, setAdFinished] = useState(false);
 
-
-  if (isLoadingData || isCalculating) {
+  // Reklam kapanınca isLoading devam ediyorsa yükleme ekranı gösterilecek
+  if (!adFinished && showAd) {
+    return <AdModal onClose={() => {
+      setShowAd(false);
+      setAdFinished(true);
+    }} />;
+  }
+  if (!showAd && (isLoadingData || isCalculating)) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[200px] py-8">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mb-4" />
@@ -22,6 +31,15 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ onReset }) => {
       </div>
     );
   }
+
+  // if (isLoadingData || isCalculating) {
+  //   return (
+  //     <div className="flex flex-col items-center justify-center min-h-[200px] py-8">
+  //       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mb-4" />
+  //       <p className="text-gray-600">{t("resultsDisplay.loadingData")}</p>
+  //     </div>
+  //   );
+  // }
 
 
   if (!results) {
@@ -90,6 +108,10 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ onReset }) => {
   const handlePrint = () => {
     window.print();
   };
+  if (showAd) {
+    return <AdModal onClose={() => setShowAd(false)} />;
+  }
+
 
   return (
     <div className="animate-fadeIn">
@@ -99,7 +121,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ onReset }) => {
           <h2 className="text-xl font-bold text-white">{t("resultsDisplay.investmentReport")}</h2>
           <p className="text-blue-100 text-sm">
             {t('resultsDisplay.ifYouHaveInvestedDailyInsteadOfSmoking', {
-              dailyCigarettess:  dailyCigarettes ,
+              dailyCigarettess: dailyCigarettes,
               selectedBrandd: selectedBrand
             })}
           </p>
