@@ -99,7 +99,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ onReset }) => {
           <h2 className="text-xl font-bold text-white">{t("resultsDisplay.investmentReport")}</h2>
           <p className="text-blue-100 text-sm">
             {t('resultsDisplay.ifYouHaveInvestedDailyInsteadOfSmoking', {
-              dailyCigarettess: { dailyCigarettes },
+              dailyCigarettess:  dailyCigarettes ,
               selectedBrandd: selectedBrand
             })}
           </p>

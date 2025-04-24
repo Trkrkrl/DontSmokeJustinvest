@@ -62,7 +62,7 @@
     "loadingData": "Veriler yükleniyor, lütfen bekleyin...",
     "noResultsYet": "Henüz sonuç bulunmuyor",
     "goBack": "Geri Dön",
-    "ifYouHaveInvestedDailyInsteadOfSmoking": "Günlük {dailyCigarettess} adet {selectedBrandd} sigarası yerine yatırım yapmış olsaydınız",
+    "ifYouHaveInvestedDailyInsteadOfSmoking": "Günlük {{dailyCigarettess}} adet {{selectedBrandd}} sigarası yerine yatırım yapmış olsaydınız",
     "investmentReport": " Yatırım Raporu",
     "spentOnCigarettesTotal": "Sigaraya Harcanan",
     "investmentOnYearsTotal": "{{startedYearsAgoo}} yıl boyunca toplam",
@@ -83,5 +83,15 @@
     "printReport":"Raporu Yazdır",
     "showChart":"Tabloyu Göster",
     "showGraph":"Grafikte Göster"
-  }
+  },
+  "landing": {
+  "meta": {
+    "title": "Sigarayı Bırak, Geleceğine Yatırım Yap",
+    "description": "Sigara harcamalarınızla birikim yapabileceğinizi biliyor muydunuz? Geç kalmadan öğrenin!"
+  },
+  "headline": "Sigarayı Bırak, Geleceğine Yatırım Yap",
+  "subtext": "Geçmişte sigaraya harcadığınız parayla yatırım yapsaydınız ne kadar kazanç sağlardınız? Şimdi hesaplayın.",
+  "cta": "Hemen Hesapla"
+}
+
 }

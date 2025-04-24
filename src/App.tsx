@@ -7,6 +7,7 @@ import './App.css';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { Routes, Route, useParams, useNavigate, Navigate } from 'react-router-dom';
+import Landing from './Landing';
 
 function MainContent() {
   const [showResults, setShowResults] = useState(false);
@@ -80,23 +81,25 @@ function MainContent() {
   );
 }
 
+
 function App() {
   return (
     <AppProvider>
       <Routes>
-      <Route path="/" element={<RedirectToLang />} />
-        <Route path="/:lang" element={<MainContent />} />
+        <Route path="/" element={<RedirectToLang />} />
+        <Route path="/:lang" element={<Landing />} />
+        <Route path="/:lang/calculator" element={<MainContent />} />
         <Route path="*" element={<div>404 - Not Found</div>} />
       </Routes>
     </AppProvider>
   );
 }
-// Yeni bileşen:
+
 const RedirectToLang = () => {
   const browserLang = navigator.language || navigator.languages[0];
   const langCode = browserLang.startsWith('tr') ? 'tr' : 'en';
-
   return <Navigate to={`/${langCode}`} replace />;
 };
+
 
 export default App;
