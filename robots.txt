@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://dont-smoke-justinvest.vercel.app/sitemap.xml

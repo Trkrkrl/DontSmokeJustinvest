@@ -1,23 +1,56 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calculator } from 'lucide-react';
 import UserInputForm from './components/UserInputForm';
 import ResultsDisplay from './components/ResultsDisplay';
 import { AppProvider } from './context/AppContext';
 import './App.css';
+import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
+import { Routes, Route, useParams, useNavigate } from 'react-router-dom';
 
-function App() {
+function MainContent() {
   const [showResults, setShowResults] = useState(false);
-  
+  const { lang } = useParams();
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (lang && lang !== i18n.language) {
+      i18n.changeLanguage(lang);
+    }
+  }, [lang, i18n]);
+
+  const switchLanguage = (targetLang: string) => {
+    if (targetLang !== i18n.language) {
+      navigate(`/${targetLang}`);
+    }
+  };
+
   return (
-    <AppProvider>
-      <div className="full-height-layout  bg-gradient-to-br from-gray-50 to-gray-100">
+    <>
+      <Helmet>
+        <title>{t('meta.title')}</title>
+        <meta name="description" content={t('meta.description')} />
+        <meta property="og:title" content={t('meta.title')} />
+        <meta property="og:description" content={t('meta.description')} />
+        <meta property="og:image" content="/og-image.png" />
+        <meta name="robots" content="index, follow" />
+      </Helmet>
+
+      <div className="full-height-layout bg-gradient-to-br from-gray-50 to-gray-100">
         <header className="bg-white shadow-sm">
-          <div className="container mx-auto px-4 py-4 flex items-center">
-            <Calculator className="h-8 w-8 text-green-600 mr-3" />
-            <h1 className="text-2xl font-bold text-gray-800">Sigara ve Yatırım Kıyaslama Aracı</h1>
+          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div className="flex items-center">
+              <Calculator className="h-8 w-8 text-green-600 mr-3" />
+              <h1 className="text-2xl font-bold text-gray-800">{t('header.title')}</h1>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => switchLanguage('tr')} className="text-sm underline text-gray-600">TR</button>
+              <button onClick={() => switchLanguage('en')} className="text-sm underline text-gray-600">EN</button>
+            </div>
           </div>
         </header>
-        
+
         <main className="container mx-auto px-4 py-8 flex-grow-main">
           {!showResults ? (
             <UserInputForm onComplete={() => setShowResults(true)} />
@@ -25,42 +58,35 @@ function App() {
             <ResultsDisplay onReset={() => setShowResults(false)} />
           )}
         </main>
-        
+
         <footer className="bg-gray-800 text-white py-6">
-  <div className="container mx-auto px-4 text-center">
-    <p className="text-sm font-semibold">© 2025 Sigara vs Yatırım Kıyaslayıcı. Tüm hakları saklıdır.</p>
+          <div className="container mx-auto px-4 text-center">
+            <p className="text-sm font-semibold">{t('footer.copyright')}</p>
+            <p className="text-xs mt-2 text-gray-400">{t('footer.disclaimer')}</p>
+            <p className="text-xs mt-4 text-gray-300">{t('footer.support')}</p>
 
-    <p className="text-xs mt-2 text-gray-400">
-      Bu araç, sigaraya harcanan paranın uzun vadeli yatırım fırsatlarına nasıl dönüşebileceğini göstermek için tasarlanmıştır. Yatırım tavsiyesi değildir. 
-    </p>
-
-    <p className="text-xs mt-4 text-gray-300">
-      Daha fazla yatırım aracı eklemek ve geçmiş yıllara ait daha kapsamlı veriler sağlamak için lütfen projemizi destekleyin.
-    </p>
-
-    <div className="mt-3 flex justify-center space-x-4">
-      <a
-        href="https://github.com/sponsors/Trkrkrl" // GitHub URL'ni buraya ekle
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-sm text-blue-400 hover:text-blue-300 underline"
-      >
-        GitHub üzerinden katkıda bulunun
-      </a>
-
-      <a
-        href="https://patreon.com/TheKarapetti" // Patreon URL'ni buraya ekle
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-sm text-yellow-400 hover:text-yellow-300 underline"
-      >
-        Patreon ile destek olun
-      </a>
-    </div>
-  </div>
-</footer>
-
+            <div className="mt-3 flex justify-center space-x-4">
+              <a href="https://github.com/sponsors/Trkrkrl" target="_blank" rel="noopener noreferrer" className="text-sm text-blue-400 hover:text-blue-300 underline">
+                {t('footer.github')}
+              </a>
+              <a href="https://patreon.com/TheKarapetti" target="_blank" rel="noopener noreferrer" className="text-sm text-yellow-400 hover:text-yellow-300 underline">
+                {t('footer.patreon')}
+              </a>
+            </div>
+          </div>
+        </footer>
       </div>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <AppProvider>
+      <Routes>
+        <Route path="/:lang" element={<MainContent />} />
+        <Route path="*" element={<div>404 - Not Found</div>} />
+      </Routes>
     </AppProvider>
   );
 }

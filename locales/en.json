@@ -1,0 +1,89 @@
+{
+  "header": {
+    "title": "Smoking vs Investment Comparison Tool"
+  },
+  "footer": {
+    "copyright": "© 2025 Smoking vs Investment Comparison. All rights reserved.",
+    "disclaimer": "This tool shows how money spent on cigarettes could become long-term investments. This is not financial advice.",
+    "support": "Support the project to add more investment options.",
+    "github": "Donate via GitHub",
+    "patreon": "Support via Patreon"
+  },
+  "meta": {
+    "title": "Cigarette vs Investment Calculator",
+    "description": "Calculate how much you could have invested instead of smoking. Quit smoking, start investing."
+  },
+  "userInputForm": {
+  "step1": {
+    "step": "Step 1/4",
+    "title": "Cigarette Consumption",
+    "dailyCount": "How many cigarettes do you smoke per day?",
+    "packageInfo": "This equals {{packs}} pack(s) of cigarettes.",
+    "brand": "Which brand of cigarette do you use?"
+  },
+  "step2": {
+    "step": "Step 2/4",
+    "title": "Smoking Duration",
+    "question": "How many years ago did you start smoking?",
+    "since": "You have been smoking since {{year}}."
+  },
+  "step3": {
+    "step": "Step 3/4",
+    "title": "Investment Instruments",
+    "question": "How many different investment instruments would you like to use?",
+    "info": "Your cigarette spending will be equally divided among the selected investments."
+  },
+  "step4": {
+    "step": "Step 4/4",
+    "title": "Select Investment Instruments",
+    "info": "You can choose different investment instruments for each year.",
+    "note": "* Some investment data may not be available before certain years."
+  },
+  "actions": {
+    "next": "Next",
+    "back": "Back",
+    "report": "Create Report"
+  }
+},
+"investmentChart": {
+  "dataNotFound": "No data found",
+  "spentOnCigarettes": "Spent on Cigarettes: {{spent}}",
+  "investmentValue": "Investment Value: {{investmentValue}}",
+  "spentOnCigarettesTotal": "Spent on Cigarettes",
+  "investmentValueTotal": "Investment Value"
+},
+"investmentSelector": {
+  "investmentTool": "Investment Tool",
+  "applyToAllYears": "Apply to All Years",
+  "selectInvestmentTools": "Select Investment Tool",
+  "select": "Select"
+},
+"resultsDisplay": {
+  "loadingData": "Loading data, please wait...",
+  "noResultsYet": "No results yet",
+  "goBack": "Go Back",
+  "ifYouHaveInvestedDailyInsteadOfSmoking": "If you had invested daily instead of smoking {dailyCigarettess} {selectedBrandd} cigarettes",
+  "investmentReport": "Investment Report",
+  "spentOnCigarettesTotal": "Spent on Cigarettes",
+  "investmentOnYearsTotal": "Total over {{startedYearsAgoo}} years",
+  "investmentValue": "Investment Value",
+  "todaysTotalValue": "Today's Total Value",
+  "netProfit": "Net Profit",
+  "investmentValueGraph": "Investment Value Chart",
+  "annualInvestmentDetails": "Annual Investment Details",
+  "year": "Year",
+  "spentOnCigarette": "Spent on Cigarettes",
+  "roi": "Return on Investment",
+  "totalAmount": "Total Amount:",
+  "todaysValue": "Today's Value:",
+  "totalCost": "Total Cost:",
+  "profitReturn": "Return:",
+  "totalIncPercentage": "{{totalIncPercentage}}% of total investment",
+  "newCalculation": "New Calculation",
+  "printReport": "Print Report",
+  "showChart":"Show on Chart",
+    "showGraph":"Show on Graph"
+}
+
+
+}

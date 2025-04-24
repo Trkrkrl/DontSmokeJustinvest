@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { getAvailableAssetsByYear } from '../data/availableAssets';
+import { useTranslation } from 'react-i18next';
+
 
 
 
@@ -16,6 +18,8 @@ const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({ startYear }) =>
     applyToAllYears,
     setApplyToAllYears
   } = useAppContext();
+  const { t } = useTranslation();
+
 
   const currentYear = new Date().getFullYear();
   const years = Array.from(
@@ -29,7 +33,7 @@ const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({ startYear }) =>
     const loadAssets = async () => {
 
       const data = await getAvailableAssetsByYear();
-     // console.log("availables: ", data)
+      // console.log("availables: ", data)
       setAvailableAssets(data);
     };
     loadAssets();
@@ -108,7 +112,7 @@ const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({ startYear }) =>
           {Array.from({ length: investmentCount }).map((_, index) => (
             <div key={`investment-${index}`} className="bg-gray-50 p-4 rounded-md">
               <h3 className="text-md font-medium text-gray-700 mb-2">
-                Yatırım Aracı {index + 1}
+                {t('investmentSelector.investmentTool')} {index + 1}
               </h3>
 
               <div className="flex items-center mb-3">
@@ -120,7 +124,7 @@ const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({ startYear }) =>
                   onChange={(e) => handleApplyToAllYearsChange(index, e.target.checked)}
                 />
                 <label htmlFor={`apply-all-${index}`} className="ml-2 block text-sm text-gray-600">
-                  Tüm yıllara uygula
+                  {t('investmentSelector.applyToAllYears')}
                 </label>
               </div>
 
@@ -134,7 +138,8 @@ const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({ startYear }) =>
                     }
                     onChange={(e) => handleInvestmentChange(years[0], index, e.target.value)}
                   >
-                    <option value="">Yatırım aracı seçin</option>
+
+                    <option value="">{t('investmentSelector.selectInvestmentTools')}</option>
                     {Array.from(assetsByYear[years[0]]).map(asset => (
                       <option key={asset} value={asset}>{asset}</option>
                     ))}
@@ -153,7 +158,7 @@ const InvestmentSelector: React.FC<InvestmentSelectorProps> = ({ startYear }) =>
                         }
                         onChange={(e) => handleInvestmentChange(year, index, e.target.value)}
                       >
-                        <option value="">Seçin</option>
+                        <option value="">{t('investmentSelector.select')}</option>
                         {Array.from(assetsByYear[year]).map(asset => (
                           <option key={asset} value={asset}>{asset}</option>
                         ))}

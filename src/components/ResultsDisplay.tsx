@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Printer, BarChart3, TrendingUp } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import InvestmentChart from './InvestmentChart';
+import { useTranslation } from 'react-i18next';
 
 interface ResultsDisplayProps {
   onReset: () => void;
@@ -9,13 +10,15 @@ interface ResultsDisplayProps {
 
 const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ onReset }) => {
   const [showChart, setShowChart] = useState(false);
-  const { results, isLoadingData, dailyCigarettes, selectedBrand, startedYearsAgo,isCalculating } = useAppContext();
+  const { results, isLoadingData, dailyCigarettes, selectedBrand, startedYearsAgo, isCalculating } = useAppContext();
+  const { t } = useTranslation();
+
 
   if (isLoadingData || isCalculating) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[200px] py-8">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mb-4" />
-        <p className="text-gray-600">Veriler yükleniyor, lütfen bekleyin...</p>
+        <p className="text-gray-600">{t("resultsDisplay.loadingData")}</p>
       </div>
     );
   }
@@ -24,12 +27,12 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ onReset }) => {
   if (!results) {
     return (
       <div className="text-center p-8">
-        <p>Henüz sonuç bulunmuyor.</p>
+        <p>{t("resultsDisplay.noResultsYet")}</p>
         <button
           onClick={onReset}
           className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none btn"
         >
-          Geri Dön
+          {t("resultsDisplay.goBack")}
         </button>
       </div>
     );
@@ -93,9 +96,12 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ onReset }) => {
       {/* Summary Card */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
         <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-4">
-          <h2 className="text-xl font-bold text-white">Yatırım Raporu</h2>
+          <h2 className="text-xl font-bold text-white">{t("resultsDisplay.investmentReport")}</h2>
           <p className="text-blue-100 text-sm">
-            Günlük {dailyCigarettes} adet {selectedBrand} sigarası yerine yatırım yapmış olsaydınız
+            {t('resultsDisplay.ifYouHaveInvestedDailyInsteadOfSmoking', {
+              dailyCigarettess: { dailyCigarettes },
+              selectedBrandd: selectedBrand
+            })}
           </p>
         </div>
 
@@ -104,25 +110,28 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ onReset }) => {
             <div className="bg-gray-50 p-4 rounded-md">
               <div className="flex items-center mb-2">
                 <Printer className="h-5 w-5 text-red-500 mr-2" />
-                <h3 className="text-lg font-medium text-gray-700">Sigaraya Harcanan</h3>
+                <h3 className="text-lg font-medium text-gray-700">{t("resultsDisplay.spentOnCigarettesTotal")}</h3>
               </div>
               <p className="text-2xl font-bold text-red-600">{formatCurrency(results.totalSpentOnCigarettes)}</p>
-              <p className="text-xs text-gray-500 mt-1">{startedYearsAgo} yıl boyunca toplam</p>
+              <p className="text-xs text-gray-500 mt-1">
+                {t('resultsDisplay.investmentOnYearsTotal', {
+                  startedYearsAgoo: startedYearsAgo
+                })}</p>
             </div>
 
             <div className="bg-gray-50 p-4 rounded-md">
               <div className="flex items-center mb-2">
                 <TrendingUp className="h-5 w-5 text-green-500 mr-2" />
-                <h3 className="text-lg font-medium text-gray-700">Yatırım Değeri</h3>
+                <h3 className="text-lg font-medium text-gray-700">{t("resultsDisplay.investmentValue")}</h3>
               </div>
               <p className="text-2xl font-bold text-green-600">{formatCurrency(results.totalInvestmentValue)}</p>
-              <p className="text-xs text-gray-500 mt-1">Bugünkü toplam değer</p>
+              <p className="text-xs text-gray-500 mt-1">{t("resultsDisplay.todaysTotalValue")}</p>
             </div>
 
             <div className="bg-gray-50 p-4 rounded-md">
               <div className="flex items-center mb-2">
                 <BarChart3 className="h-5 w-5 text-blue-500 mr-2" />
-                <h3 className="text-lg font-medium text-gray-700">Net Kazanç</h3>
+                <h3 className="text-lg font-medium text-gray-700">{t("resultsDisplay.netProfit")}</h3>
               </div>
               <p className={`text-2xl font-bold ${results.netProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {formatCurrency(results.netProfit)}
@@ -142,27 +151,27 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ onReset }) => {
           className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none btn"
         >
           <BarChart3 className="h-4 w-4 mr-2" />
-          {showChart ? 'Tabloyu Göster' : 'Grafikte Göster'}
+          {showChart ? t("resultsDisplay.showChart") : t("resultsDisplay.showGraph")}
         </button>
       </div>
 
       {/* Results Display */}
       {showChart ? (
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h3 className="text-lg font-medium text-gray-700 mb-4">Yatırım Değeri Grafiği</h3>
+          <h3 className="text-lg font-medium text-gray-700 mb-4">{t("resultsDisplay.investmentValueGraph")}</h3>
           <InvestmentChart yearlyReturns={results.yearlyReturns} />
         </div>
       ) : (
         <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
-          <h3 className="bg-gray-50 px-6 py-3 text-lg font-medium text-gray-700">Yıllık Yatırım Detayları</h3>
+          <h3 className="bg-gray-50 px-6 py-3 text-lg font-medium text-gray-700">{t("resultsDisplay.annualInvestmentDetails")}</h3>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Yıl</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sigaraya Harcanan</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Yatırım Değeri</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Getiri Oranı</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("resultsDisplay.year")}Yıl</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("resultsDisplay.spentOnCigarette")}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("resultsDisplay.investmentValue")}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("resultsDisplay.roi")}</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -198,29 +207,32 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ onReset }) => {
             <h4 className="text-md font-medium text-gray-700 mb-2">{detail.asset}</h4>
 
             <p className="text-sm text-gray-600">
-              <span className="font-semibold">Toplam Miktar:</span>{' '}
+              <span className="font-semibold">{t("resultsDisplay.totalAmount")}</span>{' '}
               {detail.quantity.toFixed(4)}
             </p>
 
             <p className="text-sm text-gray-600">
-              <span className="font-semibold">Bugünkü Değer:</span>{' '}
+              <span className="font-semibold">{t("resultsDisplay.todaysValue")}</span>{' '}
               {formatCurrency(detail.value)}
             </p>
 
             <p className="text-sm text-gray-600">
-              <span className="font-semibold">Toplam Maliyet:</span>{' '}
+              <span className="font-semibold">{t("resultsDisplay.totalCost")}</span>{' '}
               {formatCurrency(detail.spent)}
             </p>
 
             <p className="text-sm text-gray-600">
-              <span className="font-semibold">Getiri:</span>{' '}
+              <span className="font-semibold">{t("resultsDisplay.profitReturn")}Getiri:</span>{' '}
               <span className={`font-semibold ${detail.roi >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {detail.roi >= 0 ? '+' : ''}{detail.roi.toFixed(2)}%
               </span>
             </p>
 
             <p className="text-xs text-gray-500 mt-2">
-              Toplam yatırımın %{detail.percentOfTotal.toFixed(2)}’i
+              {t('resultsDisplay.step2.since', {
+                totalIncPercentage: detail.percentOfTotal.toFixed(2)
+              })}
+
             </p>
           </div>
         ))}
@@ -235,7 +247,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ onReset }) => {
           className="flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none btn"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Yeni Hesaplama
+          {t("resultsDisplay.newCalculation")}
         </button>
 
         <button
@@ -243,7 +255,8 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ onReset }) => {
           className="flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none btn"
         >
           <Printer className="h-4 w-4 mr-2" />
-          Raporu Yazdır
+          {t("resultsDisplay.printReport")}
+
         </button>
       </div>
     </div>

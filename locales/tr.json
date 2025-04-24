@@ -1,0 +1,87 @@
+{
+  "header": {
+    "title": "Sigara ve Yatırım Kıyaslama Aracı"
+  },
+  "footer": {
+    "copyright": "© 2025 Sigara vs Yatırım Kıyaslayıcı. Tüm hakları saklıdır.",
+    "disclaimer": "Bu araç, sigaraya harcanan paranın yatırım fırsatlarına nasıl dönüşebileceğini göstermek için tasarlanmıştır. Yatırım tavsiyesi değildir.",
+    "support": "Daha fazla yatırım aracı eklemek için projemizi destekleyin.",
+    "github": "GitHub üzerinden katkıda bulunun",
+    "patreon": "Patreon ile destek olun"
+  },
+  "meta": {
+    "title": "Sigara ve Yatırım Kıyaslama Aracı",
+    "description": "Sigaraya harcadığınız para ile yıllar içinde ne kadar yatırım yapabileceğinizi öğrenin. Sigarayı bırakın, yatırım yapın."
+  },
+  "userInputForm": {
+    "step1": {
+      "step": "Adım 1/4",
+      "title": "Sigara Tüketimi ",
+      "dailyCount": "Günlük kaç adet sigara içiyorsunuz?",
+      "packageInfo": "Bu {{packs}} paket sigara ediyor.",
+      "brand": "Hangi marka sigara içiyorsunuz?"
+    },
+    "step2": {
+      "step": "Adım 2/4",
+      "title": "Sigara Kullanım Süresi ",
+      "question": "Kaç yıl önce sigaraya başladınız?",
+      "since": "{{year}} yılından beri sigara kullanıyorsunuz."
+    },
+    "step3": {
+      "step": "Adım 3/4",
+      "title": "Yatırım Araçları",
+      "question": "Kaç farklı yatırım aracı kullanmak istersiniz?",
+      "info": "Sigara harcamalarınız eşit olarak bölünecektir."
+    },
+    "step4": {
+      "step": "Adım 4/4",
+      "title": "Yatırım Araçları Seçimi (Adım 4/4)",
+      "info": "Her yıl için farklı yatırım araçları seçebilirsiniz. 'Tüm yıllara uygula' kutucuğunu işaretlerseniz, seçtiğiniz araç tüm yıllara otomatik olarak atanır.",
+      "note": "* Bazı yatırım araçlarına ait veriler 2010 öncesinde mevcut olmayabilir. Her yıl için  geçerli verisi olan araçlar listelenmektedir."
+    },
+    "actions": {
+      "next": "İleri",
+      "back": "Geri",
+      "report": "Raporu Hazırla"
+    }
+  },
+  "investmentChart": {
+    "dataNotFound": "Veri bulunamadı",
+    "spentOnCigarettes": "Sigaraya Harcanan : {{spent}}",
+    "investmentValue": "Yatırım Değeri: {{investmentValue}}",
+    "spentOnCigarettesTotal": "Sigaraya Harcanan",
+    "investmentValueTotal": "Yatırım Değeri"
+  },
+  "investmentSelector": {
+    "investmentTool": "Yatırım Aracı",
+    "applyToAllYears": "Yatırım Aracı",
+    "selectInvestmentTools": "Yatırım Aracı Seçin",
+    "select": "Seçin"
+  },
+  "resultsDisplay": {
+    "loadingData": "Veriler yükleniyor, lütfen bekleyin...",
+    "noResultsYet": "Henüz sonuç bulunmuyor",
+    "goBack": "Geri Dön",
+    "ifYouHaveInvestedDailyInsteadOfSmoking": "Günlük {dailyCigarettess} adet {selectedBrandd} sigarası yerine yatırım yapmış olsaydınız",
+    "investmentReport": " Yatırım Raporu",
+    "spentOnCigarettesTotal": "Sigaraya Harcanan",
+    "investmentOnYearsTotal": "{{startedYearsAgoo}} yıl boyunca toplam",
+    "investmentValue": "Yatırım Değeri",
+    "todaysTotalValue": "Bugünkü toplam değeri",
+    "netProfit": "Net Kazanç",
+    "investmentValueGraph": "Yatırım Değeri Grafiği",
+    "annualInvestmentDetails": "Yıllık Yatırım Detayları",
+    "year": "Yıl",
+    "spentOnCigarette": "Sigaraya Harcanan",
+    "roi": "Getiri Oranı",
+    "totalAmount":"Toplam Miktar :",
+    "todaysValue":"Bugünkü Değer :",
+    "totalCost":"Toplam Maliyet :",
+    "profitReturn":"Getiri :",
+    "totalIncPercentage":"Toplam yatırımın %{{totalIncPercentage}}'i",
+    "newCalculation":"Yeni Hesaplama",
+    "printReport":"Raporu Yazdır",
+    "showChart":"Tabloyu Göster",
+    "showGraph":"Grafikte Göster"
+  }
+}
