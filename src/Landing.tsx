@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -13,12 +13,21 @@ const Landing: React.FC = () => {
   const handleCalculateClick = () => {
     navigate(`/${lang}/calculator`);
   };
-  const switchLanguage = (targetLang: string) => {
-    if (targetLang !== i18n.language) {
-      navigate(`/${targetLang}`);
-    }
-  };
-
+ useEffect(() => {
+     if (lang && lang !== i18n.language) {
+       i18n.changeLanguage(lang);
+     }
+   }, [lang, i18n]);
+ 
+   const switchLanguage = (targetLang: string) => {
+     const pathParts = window.location.pathname.split('/');
+     if (pathParts.length > 1) {
+       pathParts[1] = targetLang; // sadece lang parametresini değiştir
+       const newPath = pathParts.join('/');
+       navigate(newPath);
+     }
+   };
+  
 
   return (
     <>

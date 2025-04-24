@@ -22,10 +22,14 @@ function MainContent() {
   }, [lang, i18n]);
 
   const switchLanguage = (targetLang: string) => {
-    if (targetLang !== i18n.language) {
-      navigate(`/${targetLang}`);
+    const pathParts = window.location.pathname.split('/');
+    if (pathParts.length > 1) {
+      pathParts[1] = targetLang; // sadece lang parametresini değiştir
+      const newPath = pathParts.join('/');
+      navigate(newPath);
     }
   };
+  
 
   return (
     <>
