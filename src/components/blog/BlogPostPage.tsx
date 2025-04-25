@@ -68,6 +68,8 @@ const BlogPostPage: React.FC = () => {
         return <div className="text-center p-8">Yükleniyor...</div>;
     }
     const pageUrl = `${getBaseUrl()}/${lang}/blog/${slug}`;
+    const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
+
 
     return (
         <>
@@ -82,6 +84,15 @@ const BlogPostPage: React.FC = () => {
                 <meta property="og:url" content={pageUrl} />
                 {post.coverImage && <meta property="og:image" content={post.coverImage} />}
                 <link rel="canonical" href={pageUrl} />
+                <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
+                <script>
+                    {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GA_MEASUREMENT_ID}');
+            `}
+                </script>
             </Helmet>
             <div className="full-height-layout bg-gradient-to-br from-gray-50 to-gray-100">
                 <header className="bg-white shadow-sm">

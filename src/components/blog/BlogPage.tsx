@@ -30,12 +30,22 @@ const BlogPage: React.FC = () => {
   const handleHeaderClick = () => {
     navigate(`/${lang}`);
   };
+  const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
 
   return (
     <>
       <Helmet>
         <title>Blog | Don’t Smoke Just Invest</title>
         <meta name="description" content="Blog" />
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
+        <script>
+          {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GA_MEASUREMENT_ID}');
+            `}
+        </script>
       </Helmet>
       <div className="full-height-layout bg-gradient-to-br from-gray-50 to-gray-100">
         <header className="bg-white shadow-sm">

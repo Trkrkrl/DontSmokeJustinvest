@@ -3,7 +3,7 @@ import path from 'path';
 import blogPosts from '../data/blog/blogPosts';
 import bookPosts from '../data/books/bookPosts';
 import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { dirname, } from 'path';
 
 const baseUrl = 'https://dont-smoke-justinvest.vercel.app';
 const langs = ['tr', 'en'];
