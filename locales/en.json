@@ -1,6 +1,8 @@
 {
   "header": {
-    "title": "Smoking vs Investment Comparison Tool"
+    "title": "Smoking vs Investment Comparison Tool",
+    "books": "Books",
+    "blog": "Blog"
   },
   "footer": {
     "copyright": "© 2025 Smoking vs Investment Comparison. All rights reserved.",
@@ -92,5 +94,8 @@
     "headline": "Quit Smoking, Invest in Your Future",
     "subtext": "See how much you could have earned by investing instead of smoking. Start now.",
     "cta": "Calculate Now"
+  },
+  "books": {
+    "suggestions": "Suggested Books"
   }
 }

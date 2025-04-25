@@ -63,7 +63,7 @@ const BlogPostPage: React.FC = () => {
     if (notFound) {
         return <div className="text-center p-8">404 - İçerik bulunamadı.</div>;
     }
-//TODO: Buraya redirect to 404 page eklenecek ki, 404 sayfasında footer ve header de olsun
+    //TODO: Buraya redirect to 404 page eklenecek ki, 404 sayfasında footer ve header de olsun
     if (!post) {
         return <div className="text-center p-8">Yükleniyor...</div>;
     }
@@ -99,6 +99,12 @@ const BlogPostPage: React.FC = () => {
                                 className="px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 transition"
                             >
                                 Blog
+                            </Link>
+                            <Link
+                                to={`/${i18n.language}/books`}
+                                className="px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 transition"
+                            >
+                                Books
                             </Link>
                         </div>
 

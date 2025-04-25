@@ -11,6 +11,8 @@ import Landing from './Landing';
 import { Link } from 'react-router-dom';
 import BlogPostPage from './components/blog/BlogPostPage';
 import BlogPage from './components/blog/BlogPage';
+import BookPostPage from './components/book/BookPostPage';
+import BooksPage from './components/book/BooksPage';
 
 function MainContent() {
   const [showResults, setShowResults] = useState(false);
@@ -65,6 +67,12 @@ function MainContent() {
               >
                 Blog
               </Link>
+              <Link
+                to={`/${i18n.language}/books`}
+                className="px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 transition"
+              >
+                Books
+              </Link>
             </div>
 
             <div className="flex gap-2">
@@ -114,6 +122,8 @@ function App() {
         <Route path="/:lang/calculator" element={<MainContent />} />
         <Route path="/:lang/blog" element={<BlogPage />} />
         <Route path="/:lang/blog/:slug" element={<BlogPostPage />} />
+        <Route path="/:lang/books" element={<BooksPage />} />
+        <Route path="/:lang/books/:slug" element={<BookPostPage />} />
 
 
         <Route path="*" element={<div>404 - Not Found</div>} />

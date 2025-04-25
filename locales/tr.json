@@ -1,6 +1,8 @@
 {
   "header": {
-    "title": "Sigara ve Yatırım Kıyaslama Aracı"
+    "title": "Sigara ve Yatırım Kıyaslama Aracı",
+    "books":"Kitaplar",
+    "blog":"Blog"
   },
   "footer": {
     "copyright": "© 2025 Sigara vs Yatırım Kıyaslayıcı. Tüm hakları saklıdır.",
@@ -92,6 +94,9 @@
   "headline": "Sigarayı Bırak, Geleceğine Yatırım Yap",
   "subtext": "Geçmişte sigaraya harcadığınız parayla yatırım yapsaydınız ne kadar kazanç sağlardınız? Şimdi hesaplayın.",
   "cta": "Hemen Hesapla"
+},
+"books":{
+  "suggestions":"Kitap Önerileri"
 }
 
 }
