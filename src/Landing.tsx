@@ -30,6 +30,7 @@ const Landing: React.FC = () => {
     }
   };
 
+  const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
 
   return (
     <>
@@ -39,6 +40,15 @@ const Landing: React.FC = () => {
         <meta property="og:title" content={t('landing.meta.title')} />
         <meta property="og:description" content={t('landing.meta.description')} />
         <meta property="og:image" content="/og-image.png" />
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
+          <script>
+            {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GA_MEASUREMENT_ID}');
+            `}
+          </script>
       </Helmet>
 
       <div className="full-height-layout bg-gradient-to-br from-gray-50 to-gray-100">
