@@ -3,31 +3,33 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Calculator } from 'lucide-react';
+import { Link } from 'react-router-dom';
+
 
 const Landing: React.FC = () => {
   const navigate = useNavigate();
   const { lang } = useParams();
   const { t, i18n } = useTranslation();
-  
+
 
   const handleCalculateClick = () => {
     navigate(`/${lang}/calculator`);
   };
- useEffect(() => {
-     if (lang && lang !== i18n.language) {
-       i18n.changeLanguage(lang);
-     }
-   }, [lang, i18n]);
- 
-   const switchLanguage = (targetLang: string) => {
-     const pathParts = window.location.pathname.split('/');
-     if (pathParts.length > 1) {
-       pathParts[1] = targetLang; // sadece lang parametresini değiştir
-       const newPath = pathParts.join('/');
-       navigate(newPath);
-     }
-   };
-  
+  useEffect(() => {
+    if (lang && lang !== i18n.language) {
+      i18n.changeLanguage(lang);
+    }
+  }, [lang, i18n]);
+
+  const switchLanguage = (targetLang: string) => {
+    const pathParts = window.location.pathname.split('/');
+    if (pathParts.length > 1) {
+      pathParts[1] = targetLang; // sadece lang parametresini değiştir
+      const newPath = pathParts.join('/');
+      navigate(newPath);
+    }
+  };
+
 
   return (
     <>
@@ -41,18 +43,27 @@ const Landing: React.FC = () => {
 
       <div className="full-height-layout bg-gradient-to-br from-gray-50 to-gray-100">
         {/* Header */}
-       <header className="bg-white shadow-sm">
-                 <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-                   <div className="flex items-center">
-                     <Calculator className="h-8 w-8 text-green-600 mr-3" />
-                     <h1 className="text-2xl font-bold text-gray-800">{t('header.title')}</h1>
-                   </div>
-                   <div className="flex gap-2">
-                     <button onClick={() => switchLanguage('tr')} className="text-sm underline text-gray-600">TR</button>
-                     <button onClick={() => switchLanguage('en')} className="text-sm underline text-gray-600">EN</button>
-                   </div>
-                 </div>
-               </header>
+        <header className="bg-white shadow-sm">
+          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center cursor-pointer hover:opacity-80 transition">
+                <Calculator className="h-8 w-8 text-green-600 mr-3" />
+                <h1 className="text-2xl font-bold text-gray-800">{t('header.title')}</h1>
+              </div>
+              <Link
+                to={`/${i18n.language}/blog`}
+                className="px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 transition"
+              >
+                Blog
+              </Link>
+            </div>
+
+            <div className="flex gap-2">
+              <button onClick={() => switchLanguage('tr')} className="text-sm underline text-gray-600">TR</button>
+              <button onClick={() => switchLanguage('en')} className="text-sm underline text-gray-600">EN</button>
+            </div>
+          </div>
+        </header>
 
         {/* Main */}
         <main className="flex-grow-main flex flex-col items-center justify-center px-4 py-16 text-center">

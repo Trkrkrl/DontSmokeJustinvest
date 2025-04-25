@@ -8,6 +8,9 @@ import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { Routes, Route, useParams, useNavigate, Navigate } from 'react-router-dom';
 import Landing from './Landing';
+import { Link } from 'react-router-dom';
+import BlogPostPage from './components/blog/BlogPostPage';
+import BlogPage from './components/blog/BlogPage';
 
 function MainContent() {
   const [showResults, setShowResults] = useState(false);
@@ -48,17 +51,27 @@ function MainContent() {
       <div className="full-height-layout bg-gradient-to-br from-gray-50 to-gray-100">
         <header className="bg-white shadow-sm">
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-            <div
-              onClick={handleHeaderClick}
-              className="flex items-center cursor-pointer hover:opacity-80 transition"
-            >
-              <Calculator className="h-8 w-8 text-green-600 mr-3" />
-              <h1 className="text-2xl font-bold text-gray-800">{t('header.title')}</h1>
+            <div className="flex items-center gap-4">
+              <div
+                onClick={handleHeaderClick}
+                className="flex items-center cursor-pointer hover:opacity-80 transition"
+              >
+                <Calculator className="h-8 w-8 text-green-600 mr-3" />
+                <h1 className="text-2xl font-bold text-gray-800">{t('header.title')}</h1>
+              </div>
+              <Link
+                to={`/${i18n.language}/blog`}
+                className="px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 transition"
+              >
+                Blog
+              </Link>
             </div>
+
             <div className="flex gap-2">
               <button onClick={() => switchLanguage('tr')} className="text-sm underline text-gray-600">TR</button>
               <button onClick={() => switchLanguage('en')} className="text-sm underline text-gray-600">EN</button>
             </div>
+
           </div>
         </header>
 
@@ -99,6 +112,10 @@ function App() {
         <Route path="/" element={<RedirectToLang />} />
         <Route path="/:lang" element={<Landing />} />
         <Route path="/:lang/calculator" element={<MainContent />} />
+        <Route path="/:lang/blog" element={<BlogPage />} />
+        <Route path="/:lang/blog/:slug" element={<BlogPostPage />} />
+
+
         <Route path="*" element={<div>404 - Not Found</div>} />
       </Routes>
     </AppProvider>
