@@ -37,8 +37,9 @@ function MainContent() {
   const handleHeaderClick = () => {
     navigate(`/${lang}`);
   };
+  const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
 
-
+  
   return (
     <>
       <Helmet>
@@ -48,6 +49,15 @@ function MainContent() {
         <meta property="og:description" content={t('meta.description')} />
         <meta property="og:image" content="/og-image.png" />
         <meta name="robots" content="index, follow" />
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
+          <script>
+            {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GA_MEASUREMENT_ID}');
+            `}
+          </script>
       </Helmet>
 
       <div className="full-height-layout bg-gradient-to-br from-gray-50 to-gray-100">
