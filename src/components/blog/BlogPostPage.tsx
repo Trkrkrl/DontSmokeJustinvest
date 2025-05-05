@@ -50,10 +50,19 @@ const BlogPostPage: React.FC = () => {
         if (!slug) return;
 
         import(`../../data/blog/posts/${slug}.json`)
-            .then((module) => setPost(module.default))
-            .catch(
-                () => (setNotFound(true), console.log(" - "))
-            );
+            .then(async (module) => {
+                const postData = module.default;
+                const contentPath = `/blog/${postData.content}`;
+                try {
+                    const res = await fetch(contentPath);
+                    const html = await res.text();
+                    setPost({ ...postData, content: html }); // burada content artık dosyadan gelen HTML
+                } catch (error) {
+                    console.error("İçerik yüklenemedi:", error);
+                    setNotFound(true);
+                }
+            })
+            .catch(() => setNotFound(true));
     }, [slug]);
 
     if (!post) {

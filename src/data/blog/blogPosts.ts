@@ -28,6 +28,11 @@ interface BlogPost {
       summary: 'Kitle Fonlama nedir? Nasıl Kitle fonlama yatırımı yapılır  ? Riskleri Nelerdir. Türkiye`de kitle fonlama şirketleri hangileridir? Kitle Fonlama Güvenli midir?',
     },
     {
+      slug: 'kitle-fonlama-nedir',
+      title: 'Kitle Fonlama Nedir?',
+      summary: 'Kitle Fonlama nedir? Nasıl Kitle fonlama yatırımı yapılır  ? Riskleri Nelerdir. Türkiye`de kitle fonlama şirketleri hangileridir? Kitle Fonlama Güvenli midir?',
+    },
+    {
       slug: 'yatirim-takip-uygulamalari',
       title: 'Yatırım Takip Uygulamaları',
       summary: 'Yatırımlarımızı nasıl takip edebiliriz. Yatırım takip uygulamaları nelerdir? Yatırım takip uygulamaları ücretli midir?',
