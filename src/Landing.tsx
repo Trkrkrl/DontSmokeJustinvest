@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Calculator } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { SiInstagram } from '@icons-pack/react-simple-icons';
 
 
 const Landing: React.FC = () => {
@@ -122,6 +123,9 @@ const Landing: React.FC = () => {
                 className="text-sm text-yellow-400 hover:text-yellow-300 underline"
               >
                 {t('footer.patreon')}
+              </a>
+              <a href="https://instagram.com/dontsmokejustinvest_tr" target="_blank" rel="noopener noreferrer" className="text-pink-400 hover:text-pink-300">
+                <SiInstagram size={24}  />
               </a>
             </div>
           </div>

@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@firebase/functions": "^0.12.0",
+    "@icons-pack/react-simple-icons": "^12.7.0",
     "firebase": "^11.1.0",
     "i18next": "^25.0.1",
     "lucide-react": "^0.344.0",

@@ -5,6 +5,7 @@ import bookPosts from '../../data/books/bookPosts.ts';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Calculator } from 'lucide-react';
+import { SiInstagram } from '@icons-pack/react-simple-icons';
 
 const BooksPage: React.FC = () => {
     const { lang } = useParams<{ lang: string }>();
@@ -119,6 +120,9 @@ const BooksPage: React.FC = () => {
                                 </a>
                                 <a href="https://patreon.com/TheKarapetti" target="_blank" rel="noopener noreferrer" className="text-sm text-yellow-400 hover:text-yellow-300 underline">
                                     {t('footer.patreon')}
+                                </a>
+                                <a href="https://instagram.com/dontsmokejustinvest_tr" target="_blank" rel="noopener noreferrer" className="text-pink-400 hover:text-pink-300">
+                                    <SiInstagram size={24} />
                                 </a>
                             </div>
                         </div>

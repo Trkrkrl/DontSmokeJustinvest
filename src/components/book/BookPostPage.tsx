@@ -6,6 +6,7 @@ import { getBaseUrl } from '../../utils/getBaseUrl';
 import { Calculator } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { SiInstagram } from '@icons-pack/react-simple-icons';
 
 interface BookContent {
     slug: string;
@@ -168,6 +169,9 @@ const BookPostPage: React.FC = () => {
                             </a>
                             <a href="https://patreon.com/TheKarapetti" target="_blank" rel="noopener noreferrer" className="text-sm text-yellow-400 hover:text-yellow-300 underline">
                                 {t('footer.patreon')}
+                            </a>
+                            <a href="https://instagram.com/dontsmokejustinvest_tr" target="_blank" rel="noopener noreferrer" className="text-pink-400 hover:text-pink-300">
+                                <SiInstagram size={24} />
                             </a>
                         </div>
                     </div>

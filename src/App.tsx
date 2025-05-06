@@ -13,6 +13,7 @@ import BlogPostPage from './components/blog/BlogPostPage';
 import BlogPage from './components/blog/BlogPage';
 import BookPostPage from './components/book/BookPostPage';
 import BooksPage from './components/book/BooksPage';
+import { SiInstagram} from '@icons-pack/react-simple-icons';
 
 function MainContent() {
   const [showResults, setShowResults] = useState(false);
@@ -39,7 +40,7 @@ function MainContent() {
   };
   const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
 
-  
+
   return (
     <>
       <Helmet>
@@ -50,14 +51,14 @@ function MainContent() {
         <meta property="og:image" content="/og-image.png" />
         <meta name="robots" content="index, follow" />
         <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
-          <script>
-            {`
+        <script>
+          {`
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
               gtag('config', '${GA_MEASUREMENT_ID}');
             `}
-          </script>
+        </script>
       </Helmet>
 
       <div className="full-height-layout bg-gradient-to-br from-gray-50 to-gray-100">
@@ -113,6 +114,9 @@ function MainContent() {
               </a>
               <a href="https://patreon.com/TheKarapetti" target="_blank" rel="noopener noreferrer" className="text-sm text-yellow-400 hover:text-yellow-300 underline">
                 {t('footer.patreon')}
+              </a>
+              <a href="https://instagram.com/dontsmokejustinvest_tr" target="_blank" rel="noopener noreferrer" className="text-pink-400 hover:text-pink-300">
+                <SiInstagram size={24}  />
               </a>
             </div>
           </div>
